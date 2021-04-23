@@ -1,0 +1,26 @@
+{
+    "Basic":{
+        "SECRET_KEY":"chqnge_me",
+        "DEBUG":0,
+        "ALLOWED_HOSTS":["backend.slowestcheetah.com","pythonclusters-26611-0.cloudclusters.net"]
+    },
+    "Database":{
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "",
+        "USER": "",
+        "PASSWORD": "",
+        "HOST": "" ,
+        "PORT":""  
+    },
+    "Email":{
+        "EMAIL_USE_TLS": 1,
+        "EMAIL_USE_SSL" : 0,
+        "EMAIL_BACKEND" : "django.core.mail.backends.smtp.EmailBackend",
+        "EMAIL_FILE_PATH" : "",
+        "EMAIL_HOST" : "smtp.gmail.com",
+        "EMAIL_HOST_PASSWORD" : "",
+        "EMAIL_HOST_USER" : "noreply5153@gmail.com",
+        "EMAIL_PORT" : 587
+    }
+    
+}
