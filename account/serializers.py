@@ -63,7 +63,6 @@ class ChangeForgetPasswordSerialier(serializers.Serializer):
         try:
             user = User.objects.get(username=validated_data['username'])
         except Exception as e:
-            logger.error("Changing Forget password getting user gives error",str(e))
             raise serializers.ValidationError("Wrong Username!")
         if user is not None:
             p0 = PasswordResetTokenGenerator()

@@ -4,9 +4,6 @@ from .models import MailRequest
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 
-import logging
-logger = logging.getLogger("error")
-
 def createWelcomeMail(email):
     message = """
     Hey, 

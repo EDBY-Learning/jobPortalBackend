@@ -2,9 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
-import logging
 import threading
-logger = logging.getLogger("error")
 
 
 class Details(APIView):
