@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'account',
     'email_sender',
     'basicDetails',
-    'admin_account',
+    'teacherProfile'
 ]
 
 MIDDLEWARE = [
@@ -177,7 +177,7 @@ EMAIL_HOST_PASSWORD = env_var['Email']['EMAIL_HOST_PASSWORD']
 EMAIL_HOST_USER = env_var['Email']['EMAIL_HOST_USER']
 EMAIL_PORT = env_var['Email']['EMAIL_PORT']
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
+"""
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -206,3 +206,4 @@ LOGGING = {
         },
     },
 }
+"""
