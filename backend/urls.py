@@ -7,9 +7,11 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin_4uck/', admin.site.urls),
     path('auth/',include('account.urls')),
-    path('management/',include('admin_account.urls')),
+    # path('management/',include('admin_account.urls')),
     path('mailer/',include('email_sender.urls')),
-    path('details/',include('basicDetails.urls'))
+    path('details/',include('basicDetails.urls')),
+    path('job/',include('jobPortal.urls')),
+    path("crm/",include("crm.urls")),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # testing_pattern = [
