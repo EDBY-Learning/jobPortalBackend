@@ -1,41 +1,28 @@
 from rest_framework import permissions
 
-class UserViewSetIsOwner(permissions.BasePermission):
+class TeacherIsOwnerRegistration(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         if request.user:
             if request.user.is_superuser:
                 return True
             else:
-                return obj == request.user
+                return obj.user == request.user
         else:
             return False
 
-class IsOrganizationPart(permissions.BasePermission):
-
-    def has_object_permission(self, request, view, obj):
-        if request.user:
-            if request.user.is_superuser:
-                return True
-            elif request.user.is_anonymous:
-                return False
-            else:
-                return (obj == request.user.org_user_set.organization)
-        else:
-            return False
-
-class IsOrganizationPublic(permissions.BasePermission):
+class TeacherIsOwner(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         if request.user:
             if request.user.is_superuser:
                 return True
             else:
-                return obj.public
+                return obj.teacher.user == request.user
         else:
             return False
 
-class IsOrganization_Admin(permissions.BasePermission):
+class TeacherWriteOwnData(permissions.BasePermission):
 
     def has_permission(self, request, view):
         #print(getattr(request,'method',None))
@@ -45,16 +32,8 @@ class IsOrganization_Admin(permissions.BasePermission):
             elif request.user.is_anonymous:
                 return False
             else:
-                return request.user.org_user_set.user_info.is_admin
-        else:
-            return False
-
-class IsSelfData_forOrganizationBasicInfo(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        if request.user:
-            if request.user.is_superuser:
-                return True
-            else:
-                return request.user == obj.user
+                print(request.user.teacher_user.id)
+                print(request.data['teacher_id'])
+                return request.user.teacher_user.id == request.data['teacher_id']
         else:
             return False

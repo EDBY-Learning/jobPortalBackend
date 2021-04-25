@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate
 from email_sender.views import createWelcomeMail
 from utils.validations import check_password_length
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.db.utils import IntegrityError
 
 class ChangePasswordSerialier(serializers.Serializer):
     password = serializers.CharField(write_only=True)
@@ -62,7 +63,7 @@ class ChangeForgetPasswordSerialier(serializers.Serializer):
     def create(self,validated_data):
         try:
             user = User.objects.get(username=validated_data['username'])
-        except Exception as e:
+        except IntegrityError as e:
             raise serializers.ValidationError("Wrong Username!")
         if user is not None:
             p0 = PasswordResetTokenGenerator()

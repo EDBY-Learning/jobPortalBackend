@@ -55,14 +55,8 @@ class TeacherLanguage(models.Model):
     can_speak = models.IntegerField(choices=RWST,default=3)
     can_teach = models.IntegerField(choices=RWST,default=3)
  
-class SubjectLookingFor(models.Model):
-    teacher = models.ForeignKey(TeacherBasicInfo,on_delete=models.CASCADE)
-    subject = models.CharField(max_length=30)
-
-class PositionLookingFor(models.Model):
-    teacher = models.ForeignKey(TeacherBasicInfo,on_delete=models.CASCADE)
-    position = models.CharField(max_length=30)
-
-class CountryLookingFor(models.Model):
-    teacher = models.ForeignKey(TeacherBasicInfo,on_delete=models.CASCADE)
-    country = models.CharField(max_length=30)
+class TeacherPreference(models.Model):
+    teacher = models.OneToOneField(TeacherBasicInfo,on_delete=models.CASCADE)
+    subject = models.CharField(max_length=200)
+    position = models.CharField(max_length=200)
+    country = models.CharField(max_length=200)

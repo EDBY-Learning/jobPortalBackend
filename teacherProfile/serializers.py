@@ -4,8 +4,7 @@ from .models import (
     TeacherExperience,
     TeacherLanguage,
     TeacherQualifications,
-    SubjectLookingFor,
-    PositionLookingFor)
+    TeacherPreference)
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from django.contrib.auth import authenticate 
@@ -85,7 +84,6 @@ class TeacherBasicInfoSerializer(serializers.ModelSerializer):
 
 class TeacherEducationSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
-    teacher_id = serializers.CharField(write_only=True)
     class Meta:
         model = TeacherEducation
         exclude  = ('teacher',)
@@ -103,62 +101,75 @@ class TeacherEducationSerializer(serializers.ModelSerializer):
         return self.validate_year(start_year)
     
     def create(self,validated_data):
-        teacher_id = validated_data.pop("teacher_id")
-        education = TeacherEducation.objects.create(teacher=TeacherBasicInfo.objects.get(id=teacher_id),**validated_data)
+        request = self.context.get('request',None)
+        education = TeacherEducation.objects.create(teacher=request.user.teacher_user,**validated_data)
         return education
 
-    def update(self,instance,validated_data):    
-        education = TeacherEducation.objects.update_or_create(**validated_data)
+    def update(self,instance,validated_data):   
+        education,created = TeacherEducation.objects.update_or_create(pk=instance.id,**validated_data)
         return education
 
 class TeacherQualificationSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
-    teacher_id = serializers.CharField(write_only=True)
     class Meta:
         model = TeacherQualifications
         exclude  = ('teacher',)
         required_fields = ['degree','major_subject','start_date','end_date','score']
     
     def create(self,validated_data):
-        teacher_id = validated_data.pop("teacher_id")
-        qualification = TeacherQualifications.objects.create(teacher=TeacherBasicInfo.objects.get(id=teacher_id),**validated_data)
+        request = self.context.get('request',None)
+        qualification = TeacherQualifications.objects.create(teacher=request.user.teacher_user,**validated_data)
         return qualification
 
     def update(self,instance,validated_data):    
-        qualification = TeacherQualifications.objects.update_or_create(**validated_data)
+        qualification,created = TeacherQualifications.objects.update_or_create(pk=instance.id,**validated_data)
         return qualification
 
 class TeacherExperienceSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
-    teacher_id = serializers.CharField(write_only=True)
     class Meta:
         model = TeacherExperience
         exclude  = ('teacher',)
         required_fields = ['institute','ongoing','start_date','end_date','sujects','classes']
     
     def create(self,validated_data):
-        teacher_id = validated_data.pop("teacher_id")
-        education = TeacherExperience.objects.create(teacher=TeacherBasicInfo.objects.get(id=teacher_id),**validated_data)
-        return education
+        request = self.context.get('request',None)
+        experience = TeacherExperience.objects.create(teacher=request.user.teacher_user,**validated_data)
+        return experience
 
     def update(self,instance,validated_data):    
-        education = TeacherExperience.objects.update_or_create(**validated_data)
-        return education
+        experience,created = TeacherExperience.objects.update_or_create(pk=instance.id,**validated_data)
+        return experience
 
 class TeacherLanguageSerializer(serializers.ModelSerializer):
     id = serializers.CharField(read_only=True)
-    teacher_id = serializers.CharField(write_only=True)
     class Meta:
         model = TeacherLanguage
         exclude  = ('teacher',)
         required_fields = ['language','can_write','can_read','can_speak','can_teach']
     
     def create(self,validated_data):
-        teacher_id = validated_data.pop("teacher_id")
-        language = TeacherLanguage.objects.create(teacher=TeacherBasicInfo.objects.get(id=teacher_id),**validated_data)
+        request = self.context.get('request',None)
+        language = TeacherLanguage.objects.create(teacher=request.user.teacher_user,**validated_data)
         return language
 
     def update(self,instance,validated_data):    
-        language = TeacherLanguage.objects.update_or_create(**validated_data)
+        language,created  = TeacherLanguage.objects.update_or_create(pk=instance.id,**validated_data)
         return language
+
+class TeacherPreferenceSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
+    class Meta:
+        model = TeacherPreference
+        exclude  = ('teacher',)
+        required_fields = ['subject','position','country']
+    
+    def create(self,validated_data):
+        request = self.context.get('request',None)
+        preference = TeacherPreference.objects.create(teacher=request.user.teacher_user,**validated_data)
+        return preference
+
+    def update(self,instance,validated_data):    
+        preference,created  = TeacherPreference.objects.update_or_create(pk=instance.id,**validated_data)
+        return preference
 

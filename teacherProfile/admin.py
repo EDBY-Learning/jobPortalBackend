@@ -5,9 +5,7 @@ from .models import (
     TeacherExperience,
     TeacherLanguage,
     TeacherQualifications,
-    SubjectLookingFor,
-    PositionLookingFor,
-    CountryLookingFor)
+    TeacherPreference)
 # Register your models here.
 
 class TeacherEducationInline(admin.TabularInline):
@@ -22,14 +20,9 @@ class TeacherQualificationsInline(admin.TabularInline):
 class TeacherLanguageInline(admin.TabularInline):
     model = TeacherLanguage
 
-class SubjectLookingForInline(admin.TabularInline):
-    model = SubjectLookingFor
+class TeacherPreferenceInline(admin.TabularInline):
+    model = TeacherPreference
 
-class PositionLookingForInline(admin.TabularInline):
-    model = PositionLookingFor
-
-class CountryLookingForInline(admin.TabularInline):
-    model = CountryLookingFor
 
 @admin.register(TeacherBasicInfo)
 class TeacherInfoView(admin.ModelAdmin):
@@ -42,9 +35,7 @@ class TeacherInfoView(admin.ModelAdmin):
         TeacherExperienceInline,
         TeacherQualificationsInline,
         TeacherLanguageInline,
-        SubjectLookingForInline,
-        PositionLookingForInline,
-        CountryLookingForInline]
+        TeacherPreferenceInline]
 
 
 
