@@ -173,3 +173,19 @@ class TeacherPreferenceSerializer(serializers.ModelSerializer):
         preference,created  = TeacherPreference.objects.update_or_create(pk=instance.id,**validated_data)
         return preference
 
+class TeacherProfileSerializer(serializers.Serializer):
+    teacher = TeacherBasicInfoSerializer(read_only=True)
+    education = TeacherEducationSerializer(read_only=True,many=True)
+    qualification = TeacherQualificationSerializer(read_only=True,many=True)
+    experience = TeacherExperienceSerializer(read_only=True,many=True)
+    language = TeacherLanguageSerializer(read_only=True,many=True)
+    preference = TeacherPreferenceSerializer(read_only=True,many=True)
+    class Meta:
+        fields = [
+            'teacher','education',
+            'qualification','experience',
+            'language','preference']
+        exclude = ('id',)
+
+    
+    

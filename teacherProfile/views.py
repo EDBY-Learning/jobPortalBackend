@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated 
 from rest_framework import mixins
 from rest_framework.views import APIView
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.core import serializers as djangoSerializer
 from .serializers import (
     TeacherBasicInfoSerializer,
     TeacherEducationSerializer,
@@ -154,4 +154,24 @@ class TeacherPreferenceViewset(
        kwargs['partial'] = True
        return self.update(request, *args, **kwargs)
 
+from .serializers import TeacherProfileSerializer
 
+class TeacherProfileViewset(mixins.RetrieveModelMixin,viewsets.GenericViewSet):
+    permission_classes = [AllowAny]
+    serializer_class = TeacherProfileSerializer
+    queryset = TeacherBasicInfo.objects.all()
+
+    def retrieve(self, request, *args, **kwargs):
+        # do your customization here
+        instance = self.get_object()
+        serializer = self.get_serializer({
+            'teacher':instance,
+            'education':TeacherEducation.objects.filter(teacher=instance),
+            'qualification':TeacherQualifications.objects.filter(teacher=instance),
+            'experience':TeacherExperience.objects.filter(teacher=instance),
+            'language':TeacherLanguage.objects.filter(teacher=instance),
+            'preference':TeacherPreference.objects.filter(teacher=instance)
+            })
+        return Response(serializer.data,status=200)
+    
+    

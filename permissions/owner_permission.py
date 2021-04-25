@@ -22,18 +22,3 @@ class TeacherIsOwner(permissions.BasePermission):
         else:
             return False
 
-class TeacherWriteOwnData(permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        #print(getattr(request,'method',None))
-        if request.user:
-            if request.user.is_superuser:
-                return True
-            elif request.user.is_anonymous:
-                return False
-            else:
-                print(request.user.teacher_user.id)
-                print(request.data['teacher_id'])
-                return request.user.teacher_user.id == request.data['teacher_id']
-        else:
-            return False

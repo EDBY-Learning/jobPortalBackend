@@ -14,9 +14,10 @@ router.register(r'qualification',views.TeacherQualificationViewset,basename='qua
 router.register(r'experience',views.TeacherExperienceViewset,basename='education_teacher')
 router.register(r'language',views.TeacherLanguageViewset,basename='language_teacher')
 router.register(r'preference',views.TeacherPreferenceViewset,basename='preference_teacher')
+router.register(r'profile',views.TeacherProfileViewset,basename="profile_teacher")
 
 urlpatterns = [
     path('',include(router.urls)),
-    #path("lookingfor/subject/",views.TeacherLookingForSubjects.as_view()),
+    #path('profile/<int:pk>/',views.TeacherProfile.as_view(), name='teacher_profile'),
     
 ]
