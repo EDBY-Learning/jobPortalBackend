@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'account',
     'email_sender',
     'basicDetails',
-    'teacherProfile'
+    'teacherProfile',
+    'jobPortal',
+    'crm',
 ]
 
 MIDDLEWARE = [
@@ -141,7 +143,19 @@ MEDIA_ROOT = env_var['Static']['MEDIA_ROOT']
 MEDIA_URL = env_var['Static']['MEDIA_URL']
 STATIC_ROOT = env_var['Static']['STATIC_ROOT']
 
-
+#AWS storages
+AWS_ACCESS_KEY_ID = 'AKIAYILN2NTZSFYUVN6Y' #os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = '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' #os.environ.get('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = 'jobinfo' #os.environ.get('S3_BUCKET_NAME')
+AWS_DEFAULT_ACL = None
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+AWS_QUERYSTRING_AUTH = True
+AWS_S3_FILE_OVERWRITE = False
+AWS_QUERYSTRING_EXPIRE = 3600
+# DEFAULT_FILE_STORAGE = 'jobPortal.storage_backends.PublicMediaStorage'
+PUBLIC_MEDIA_LOCATION = 'media'
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=300),
