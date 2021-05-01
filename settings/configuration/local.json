@@ -2,7 +2,7 @@
     "Basic":{
         "SECRET_KEY":"CHANGE_ME",
         "DEBUG":1,
-        "ALLOWED_HOSTS":["*"]
+        "ALLOWED_HOSTS":["*","localhost:3000"]
     },
     "Database":{
         "ENGINE": "django.db.backends.sqlite3",

@@ -24,6 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User 
         fields = ['first_name','password','confirm_password']
         extra_kwargs = {
+        'first_name':{'required':True},
         'password': {'required': True},
         'confirm_password': {'required': True}}
     
@@ -46,12 +47,7 @@ class TeacherBasicInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeacherBasicInfo
         fields = ('id','user',"country_code","mobile","country","description","dob","email")
-        extra_kwargs = {
-            'mobile': {'required': True},
-            'country': {'required': True},
-            "country_code": {'required': True},
-            "email": {'required': True}
-        }
+        required_fields = ["country_code","mobile","country","email"]
     
     def createUser(self,data,mobile):
         user = User.objects.create(**data,username=mobile)
@@ -66,12 +62,15 @@ class TeacherBasicInfoSerializer(serializers.ModelSerializer):
         return email
     
     def validate_mobile(self,mobile):
-        if not MOBILE_REGEX.match(mobile):
+        if not MOBILE_REGEX.match(mobile) or mobile.strip()=="":
             raise serializers.ValidationError("Mobile Number should be only numeric")
         return mobile
     
     def create(self,validated_data):
-        user = self.createUser(validated_data.pop('user'),validated_data['mobile'])
+        try:
+            user = self.createUser(validated_data.pop('user'),validated_data['mobile'])
+        except IntegrityError as e:
+            raise serializers.ValidationError("Mobile already in use")
         teacher = TeacherBasicInfo.objects.create(user=user,**validated_data)
         return teacher
     

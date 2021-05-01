@@ -22,6 +22,7 @@ DEBUG = bool(int(env_var['Basic']['DEBUG']))
 ALLOWED_HOSTS = env_var['Basic']["ALLOWED_HOSTS"]
 
 os.environ['DEBUG'] = '1'
+CORS_ALLOWED_ORIGINS =["http://localhost:3000","http://localhost:3001"]
 
 # Application definition
 
@@ -32,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
     'account',
     'email_sender',
@@ -42,6 +44,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
