@@ -10,7 +10,8 @@ from jobPortal.models import (
 )
 from .serializers import (
     FeedbackByUserSerializer,
-    JobInfoSerializer
+    JobInfoSerializer,
+    JobPostByOutsiderSerializer
 )
 from rest_framework import status
 from rest_framework import viewsets
@@ -71,7 +72,15 @@ class JobInfoCreateEDBYViewset(
     def partial_update(self, request, *args, **kwargs):
        kwargs['partial'] = True
        return self.update(request, *args, **kwargs)
-    
+
+class JobPostByOutsideriewset(
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet
+    ):
+    serializer_class = JobPostByOutsiderSerializer
+    permission_classes = [AllowAny] 
+    queryset = JobPostByOutSider.objects.all().order_by("-entry_time")
+
 class LatestJobViewset(
     mixins.ListModelMixin,
     viewsets.GenericViewSet

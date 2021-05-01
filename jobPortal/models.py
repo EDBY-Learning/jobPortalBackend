@@ -84,7 +84,7 @@ class JobPostByOutSider(models.Model):
     #Keeping as string field comma seperated - "Maths, Physics"
     subjects = models.CharField(max_length=200,null=True,blank=True)
 
-    message = models.CharField(max_length=200,blank=True,null=True)
+    message = models.TextField(blank=True,null=True)
     entry_time = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     is_published = models.BooleanField(default=False)
