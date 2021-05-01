@@ -40,6 +40,7 @@ class GetJobViaIds(APIView):
 
 class UserFeedbackViewset(
     mixins.CreateModelMixin,
+    mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     viewsets.GenericViewSet
     ):
@@ -47,6 +48,7 @@ class UserFeedbackViewset(
     permission_classes_by_action = {
         'create': [AllowAny],
         'retrieve':[IsAuthenticated  & IsAdminUser  ],
+        'list':[IsAuthenticated  & IsAdminUser  ]
     }
     queryset = FeedbackByUser.objects.all()
     def get_permissions(self):
@@ -54,7 +56,7 @@ class UserFeedbackViewset(
 
 class JobInfoCreateEDBYViewset(
     mixins.CreateModelMixin,
-     mixins.UpdateModelMixin,
+    mixins.UpdateModelMixin,
     viewsets.GenericViewSet
     ):
     serializer_class = JobInfoSerializer
