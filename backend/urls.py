@@ -12,6 +12,7 @@ urlpatterns = [
     path('details/',include('basicDetails.urls')),
     path('job/',include('jobPortal.urls')),
     path("crm/",include("crm.urls")),
+    path('job/v2/',include('jobSearch.urls')),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # testing_pattern = [

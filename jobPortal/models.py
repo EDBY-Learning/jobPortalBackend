@@ -51,7 +51,7 @@ class JobInfo(models.Model):
     image = models.ImageField(upload_to=get_unique_full_path, max_length=200, blank=True, null=True)
     #by default edby
     isByEdby = models.BooleanField(default=True)
-    message = models.CharField(max_length=100,blank=True,null=True)
+    message = models.TextField(blank=True,null=True)
     entry_time = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     def to_dict(self):

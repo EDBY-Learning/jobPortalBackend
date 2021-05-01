@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'teacherProfile',
     'jobPortal',
     'crm',
+    "jobSearch"
 ]
 
 MIDDLEWARE = [
