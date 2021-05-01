@@ -6,7 +6,6 @@ import threading
 
 
 class Details(APIView):
-    authentication_classes = []
     permission_classes = [IsAdminUser ,IsAuthenticated]#
 
     def get(self,request,format=None):
@@ -14,7 +13,6 @@ class Details(APIView):
         return HttpResponse(num_threads)
 
 class Health(APIView):
-    authentication_classes = []
     permission_classes = [IsAdminUser ,IsAuthenticated]#
 
     def get(self,request,format=None):
