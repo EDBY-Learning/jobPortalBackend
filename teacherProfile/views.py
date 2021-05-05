@@ -22,7 +22,7 @@ from .models import (
     TeacherQualifications,
     TeacherPreference)
 
-from utils.operations import update_with_partial
+from utils.operations import update_with_partial, update_with_partial_teacher
 from permissions import manage_permissions as perm 
 from permissions import owner_permission as owner 
 
@@ -135,7 +135,7 @@ class TeacherLanguageViewset(
        return self.update(request, *args, **kwargs)
 
 class TeacherPreferenceViewset(
-    mixins.CreateModelMixin,
+    #mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
     viewsets.GenericViewSet):
@@ -145,9 +145,15 @@ class TeacherPreferenceViewset(
     def get_permissions(self):
         return perm.get_custom_permissions(self)
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_queryset().filter(teacher=request.user.teacher_user)
+        serializer = self.get_serializer(instance[0])
+        return Response(serializer.data)
+        
+
     #call put with /user/id/
     def update(self, request,  *args, **kwargs):
-       return update_with_partial(self, request,  *args, **kwargs)
+       return update_with_partial_teacher(self, request,  *args, **kwargs)
 
     #call patch with /user/id/
     def partial_update(self, request, *args, **kwargs):

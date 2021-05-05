@@ -59,4 +59,5 @@ class TeacherPreference(models.Model):
     teacher = models.OneToOneField(TeacherBasicInfo,on_delete=models.CASCADE)
     subject = models.CharField(max_length=200)
     position = models.CharField(max_length=200)
+    location = models.CharField(max_length=200)
     country = models.CharField(max_length=200)

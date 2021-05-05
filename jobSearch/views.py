@@ -88,4 +88,12 @@ class LatestJobViewset(
     serializer_class = JobInfoSerializer
     permission_classes = [AllowAny]
     queryset = JobInfo.objects.all().order_by("-entry_time")[:15]
-    
+
+class GetUserDashBoardData(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request,format=None):
+        user =  request.user #.teacher_user
+        jobs = JobInfo.objects.all().order_by("-entry_time")[:5]
+        all_jobs = [job.to_dict() for job in jobs]
+        return Response(all_jobs,status=status.HTTP_200_OK)
