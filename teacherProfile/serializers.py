@@ -72,7 +72,7 @@ class TeacherBasicInfoSerializer(serializers.ModelSerializer):
         except IntegrityError as e:
             raise serializers.ValidationError("Mobile already in use")
         teacher = TeacherBasicInfo.objects.create(user=user,**validated_data)
-        preference = TeacherPreference.objects.create(country=validated_data['country'].lower(),teacher=teacher,position="Teacher")
+        preference = TeacherPreference.objects.create(country=validated_data['country'].lower(),teacher=teacher,position="Teacher,Nurse",subject="English,Maths")
         return teacher
     
     def get_fields(self,*args,**kwargs):
@@ -180,6 +180,20 @@ class TeacherProfileSerializer(serializers.Serializer):
     experience = TeacherExperienceSerializer(read_only=True,many=True)
     language = TeacherLanguageSerializer(read_only=True,many=True)
     preference = TeacherPreferenceSerializer(read_only=True,many=True)
+    id = serializers.CharField(read_only=True)
+    class Meta:
+        fields = [
+            'teacher','education',
+            'qualification','experience',
+            'language','preference']
+
+class TeacherPublicProfileSerializer(serializers.Serializer):
+    teacher = TeacherBasicInfoSerializer(read_only=True)
+    education = TeacherEducationSerializer(read_only=True,many=True)
+    qualification = TeacherQualificationSerializer(read_only=True,many=True)
+    experience = TeacherExperienceSerializer(read_only=True,many=True)
+    language = TeacherLanguageSerializer(read_only=True,many=True)
+    preference = TeacherPreferenceSerializer(read_only=True,many=True)
     class Meta:
         fields = [
             'teacher','education',
@@ -187,5 +201,5 @@ class TeacherProfileSerializer(serializers.Serializer):
             'language','preference']
         exclude = ('id',)
 
-    
+ 
     
