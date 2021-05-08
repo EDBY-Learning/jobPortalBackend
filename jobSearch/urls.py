@@ -16,6 +16,7 @@ router.register(r'post_job_outsider',views.JobPostByOutsideriewset ,basename='po
 
 urlpatterns = [
     path('',include(router.urls)),
+    path('search/',views.JobSearchResult.as_view()),
     path("job_by_ids/",views.GetJobViaIds.as_view()),
     path("dashboard_data/",views.GetUserDashBoardData.as_view())
 ]
