@@ -131,7 +131,7 @@ class GetUserDashBoardData(APIView):
         sub_q = reduce(or_,[Q(subjects__icontains=subject) for subject in prefernce.subject.split(",")])
         loc_q = reduce(or_,[Q(city__icontains=location) for location in prefernce.location.split(",")])
         cou_q = reduce(or_,[Q(city__icontains=country) for country in prefernce.country.split(',')])
-        final_q = reduce(or_,[pos_q,sub_q,loc_q])
+        final_q = reduce(and_,[pos_q,sub_q,loc_q])
         
         jobs = JobInfo.objects.filter(final_q).all().order_by("-entry_time")
         all_jobs = [job.to_dict() for job in jobs]
@@ -139,7 +139,7 @@ class GetUserDashBoardData(APIView):
         if len(all_jobs)>0:
             return Response(all_jobs,status=status.HTTP_200_OK)
         else:
-            final_q = reduce(or_,[cou_q])
+            final_q = reduce(or_,[cou_q,loc_q])
             jobs = JobInfo.objects.filter(final_q).all().order_by("-entry_time")
             all_jobs = [job.to_dict() for job in jobs]
             return Response(all_jobs,status=status.HTTP_200_OK)
