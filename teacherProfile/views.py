@@ -21,8 +21,9 @@ from permissions import owner_permission as owner
 
 OPERATION_AFTER_LOGIN_PERMISSION = {'create': [IsAuthenticated],
                                     'retrieve':[IsAuthenticated & owner.TeacherIsOwner],
-                                    'update': [IsAuthenticated],
-                                    'partial_update':[IsAuthenticated]}
+                                    'update': [IsAuthenticated & owner.TeacherIsOwner],
+                                    'partial_update':[IsAuthenticated & owner.TeacherIsOwner],
+                                    'destroy':[IsAuthenticated & owner.TeacherIsOwner]}
 
 class TeacherRegistrationViewset(
     mixins.CreateModelMixin,
@@ -51,6 +52,7 @@ class TeacherEducationViewset(
     mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
     viewsets.GenericViewSet):
     serializer_class = myserializer.TeacherEducationSerializer
     permission_classes_by_action = OPERATION_AFTER_LOGIN_PERMISSION
@@ -91,6 +93,7 @@ class TeacherExperienceViewset(
     mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
     viewsets.GenericViewSet):
     serializer_class = myserializer.TeacherExperienceSerializer
     permission_classes_by_action = OPERATION_AFTER_LOGIN_PERMISSION
@@ -111,6 +114,7 @@ class TeacherLanguageViewset(
     mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
     viewsets.GenericViewSet):
     serializer_class = myserializer.TeacherLanguageSerializer
     permission_classes_by_action = OPERATION_AFTER_LOGIN_PERMISSION

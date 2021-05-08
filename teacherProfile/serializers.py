@@ -72,7 +72,7 @@ class TeacherBasicInfoSerializer(serializers.ModelSerializer):
         except IntegrityError as e:
             raise serializers.ValidationError("Mobile already in use")
         teacher = TeacherBasicInfo.objects.create(user=user,**validated_data)
-        preference = TeacherPreference.objects.create(country=validated_data['country'].lower(),teacher=teacher,position="Teacher,Nurse",subject="English,Maths")
+        preference = TeacherPreference.objects.create(country=validated_data['country'],teacher=teacher,position="Teacher,Nurse",subject="English,Maths")
         return teacher
     
     def get_fields(self,*args,**kwargs):
@@ -80,6 +80,9 @@ class TeacherBasicInfoSerializer(serializers.ModelSerializer):
         request = self.context.get('request',None)
         if request and (getattr(request,'method',None) in UPDATE_TEACHER_BASIC_INFO_REQUEST):
             fields['user'].read_only = True
+            fields['mobile'].read_only = True
+            fields['email'].read_only = True
+            fields['country_code'].read_only = True
         return fields
 
 class TeacherEducationSerializer(serializers.ModelSerializer):
@@ -106,7 +109,7 @@ class TeacherEducationSerializer(serializers.ModelSerializer):
         return education
 
     def update(self,instance,validated_data):   
-        education,created = TeacherEducation.objects.update_or_create(pk=instance.id,**validated_data)
+        education,created = TeacherEducation.objects.update_or_create(id=instance.id,defaults=validated_data)
         return education
 
 class TeacherQualificationSerializer(serializers.ModelSerializer):
@@ -122,7 +125,7 @@ class TeacherQualificationSerializer(serializers.ModelSerializer):
         return qualification
 
     def update(self,instance,validated_data):    
-        qualification,created = TeacherQualifications.objects.update_or_create(pk=instance.id,**validated_data)
+        qualification,created = TeacherQualifications.objects.update_or_create(id=instance.id,defaults=validated_data)
         return qualification
 
 class TeacherExperienceSerializer(serializers.ModelSerializer):
@@ -130,7 +133,7 @@ class TeacherExperienceSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeacherExperience
         exclude  = ('teacher',)
-        required_fields = ['institute','ongoing','start_date','end_date','sujects','classes']
+        required_fields = ['institute','ongoing','start_year','end_year','subjects','classes']
     
     def create(self,validated_data):
         request = self.context.get('request',None)
@@ -138,7 +141,7 @@ class TeacherExperienceSerializer(serializers.ModelSerializer):
         return experience
 
     def update(self,instance,validated_data):    
-        experience,created = TeacherExperience.objects.update_or_create(pk=instance.id,**validated_data)
+        experience,created = TeacherExperience.objects.update_or_create(id=instance.id,defaults=validated_data)
         return experience
 
 class TeacherLanguageSerializer(serializers.ModelSerializer):
@@ -154,7 +157,7 @@ class TeacherLanguageSerializer(serializers.ModelSerializer):
         return language
 
     def update(self,instance,validated_data):    
-        language,created  = TeacherLanguage.objects.update_or_create(pk=instance.id,**validated_data)
+        language,created  = TeacherLanguage.objects.update_or_create(id=instance.id,defaults=validated_data)
         return language
 
 class TeacherPreferenceSerializer(serializers.ModelSerializer):
