@@ -1,7 +1,6 @@
 **/__pycache__
 *.sqlite3
 **/migrations
-environment/local.json
 logs/*/error.log
 logs/*/debug.log
 settings/configuration/dev.json

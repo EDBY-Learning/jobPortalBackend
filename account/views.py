@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from .serializers import ChangePasswordSerialier, ChangeForgetPasswordSerialier
 from email_sender.views import createResetMail
+from .models import ForgotPasswordData
 
 class ChangePasswordViewSet(mixins.CreateModelMixin,viewsets.GenericViewSet):
     serializer_class = ChangePasswordSerialier
@@ -64,3 +65,16 @@ class ChangeForgetPasswordViewSet(mixins.CreateModelMixin,viewsets.GenericViewSe
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
+
+class SaveForgotPasswordData(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self,request,format=None):
+        mobile = request.POST.get('mobile',None)
+        email = request.POST.get('email',None)
+
+        if (not mobile) and (not email):
+             Response(data={'message':'Please provide both email and mobile'},status=status.HTTP_400_BAD_REQUEST)
+        data = ForgotPasswordData.objects.create(mobile=mobile,email=email)
+
+        return Response("Succesfully data sent to admin, please have patience we will respond soon",status=status.HTTP_200_OK)

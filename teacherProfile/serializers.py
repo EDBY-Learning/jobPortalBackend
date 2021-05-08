@@ -24,6 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User 
         fields = ['first_name','password','confirm_password']
         extra_kwargs = {
+        'first_name':{'required':True},
         'password': {'required': True},
         'confirm_password': {'required': True}}
     
@@ -46,12 +47,7 @@ class TeacherBasicInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeacherBasicInfo
         fields = ('id','user',"country_code","mobile","country","description","dob","email")
-        extra_kwargs = {
-            'mobile': {'required': True},
-            'country': {'required': True},
-            "country_code": {'required': True},
-            "email": {'required': True}
-        }
+        required_fields = ["country_code","mobile","country","email"]
     
     def createUser(self,data,mobile):
         user = User.objects.create(**data,username=mobile)
@@ -66,13 +62,17 @@ class TeacherBasicInfoSerializer(serializers.ModelSerializer):
         return email
     
     def validate_mobile(self,mobile):
-        if not MOBILE_REGEX.match(mobile):
+        if not MOBILE_REGEX.match(mobile) or mobile.strip()=="":
             raise serializers.ValidationError("Mobile Number should be only numeric")
         return mobile
     
     def create(self,validated_data):
-        user = self.createUser(validated_data.pop('user'),validated_data['mobile'])
+        try:
+            user = self.createUser(validated_data.pop('user'),validated_data['mobile'])
+        except IntegrityError as e:
+            raise serializers.ValidationError("Mobile already in use")
         teacher = TeacherBasicInfo.objects.create(user=user,**validated_data)
+        preference = TeacherPreference.objects.create(country=validated_data['country'],teacher=teacher,position="Teacher,Nurse",subject="English,Maths")
         return teacher
     
     def get_fields(self,*args,**kwargs):
@@ -80,6 +80,9 @@ class TeacherBasicInfoSerializer(serializers.ModelSerializer):
         request = self.context.get('request',None)
         if request and (getattr(request,'method',None) in UPDATE_TEACHER_BASIC_INFO_REQUEST):
             fields['user'].read_only = True
+            fields['mobile'].read_only = True
+            fields['email'].read_only = True
+            fields['country_code'].read_only = True
         return fields
 
 class TeacherEducationSerializer(serializers.ModelSerializer):
@@ -106,7 +109,7 @@ class TeacherEducationSerializer(serializers.ModelSerializer):
         return education
 
     def update(self,instance,validated_data):   
-        education,created = TeacherEducation.objects.update_or_create(pk=instance.id,**validated_data)
+        education,created = TeacherEducation.objects.update_or_create(id=instance.id,defaults=validated_data)
         return education
 
 class TeacherQualificationSerializer(serializers.ModelSerializer):
@@ -122,7 +125,7 @@ class TeacherQualificationSerializer(serializers.ModelSerializer):
         return qualification
 
     def update(self,instance,validated_data):    
-        qualification,created = TeacherQualifications.objects.update_or_create(pk=instance.id,**validated_data)
+        qualification,created = TeacherQualifications.objects.update_or_create(id=instance.id,defaults=validated_data)
         return qualification
 
 class TeacherExperienceSerializer(serializers.ModelSerializer):
@@ -130,7 +133,7 @@ class TeacherExperienceSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeacherExperience
         exclude  = ('teacher',)
-        required_fields = ['institute','ongoing','start_date','end_date','sujects','classes']
+        required_fields = ['institute','ongoing','start_year','end_year','subjects','classes']
     
     def create(self,validated_data):
         request = self.context.get('request',None)
@@ -138,7 +141,7 @@ class TeacherExperienceSerializer(serializers.ModelSerializer):
         return experience
 
     def update(self,instance,validated_data):    
-        experience,created = TeacherExperience.objects.update_or_create(pk=instance.id,**validated_data)
+        experience,created = TeacherExperience.objects.update_or_create(id=instance.id,defaults=validated_data)
         return experience
 
 class TeacherLanguageSerializer(serializers.ModelSerializer):
@@ -154,7 +157,7 @@ class TeacherLanguageSerializer(serializers.ModelSerializer):
         return language
 
     def update(self,instance,validated_data):    
-        language,created  = TeacherLanguage.objects.update_or_create(pk=instance.id,**validated_data)
+        language,created  = TeacherLanguage.objects.update_or_create(id=instance.id,defaults=validated_data)
         return language
 
 class TeacherPreferenceSerializer(serializers.ModelSerializer):
@@ -162,18 +165,32 @@ class TeacherPreferenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeacherPreference
         exclude  = ('teacher',)
-        required_fields = ['subject','position','country']
+        required_fields = ['subject','position','location','country']
     
-    def create(self,validated_data):
-        request = self.context.get('request',None)
-        preference = TeacherPreference.objects.create(teacher=request.user.teacher_user,**validated_data)
-        return preference
+    # def create(self,validated_data):
+    #     request = self.context.get('request',None)
+    #     preference = TeacherPreference.objects.create(teacher=request.user.teacher_user,**validated_data)
+    #     return preference
 
     def update(self,instance,validated_data):    
-        preference,created  = TeacherPreference.objects.update_or_create(pk=instance.id,**validated_data)
+        preference,created  = TeacherPreference.objects.update_or_create(id=instance.id,defaults=validated_data)
         return preference
 
 class TeacherProfileSerializer(serializers.Serializer):
+    teacher = TeacherBasicInfoSerializer(read_only=True)
+    education = TeacherEducationSerializer(read_only=True,many=True)
+    qualification = TeacherQualificationSerializer(read_only=True,many=True)
+    experience = TeacherExperienceSerializer(read_only=True,many=True)
+    language = TeacherLanguageSerializer(read_only=True,many=True)
+    preference = TeacherPreferenceSerializer(read_only=True,many=True)
+    id = serializers.CharField(read_only=True)
+    class Meta:
+        fields = [
+            'teacher','education',
+            'qualification','experience',
+            'language','preference']
+
+class TeacherPublicProfileSerializer(serializers.Serializer):
     teacher = TeacherBasicInfoSerializer(read_only=True)
     education = TeacherEducationSerializer(read_only=True,many=True)
     qualification = TeacherQualificationSerializer(read_only=True,many=True)
@@ -187,5 +204,5 @@ class TeacherProfileSerializer(serializers.Serializer):
             'language','preference']
         exclude = ('id',)
 
-    
+ 
     

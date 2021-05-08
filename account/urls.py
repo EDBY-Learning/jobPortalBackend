@@ -24,5 +24,7 @@ urlpatterns = [
     path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('login/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('logout/', TokenRefreshView.as_view(), name='token_delete'),
-    path('get_reset_password_token/',views.ForgetPasswordView.as_view(), name='get_reset_password_token')
+    path('get_reset_password_token/',views.ForgetPasswordView.as_view(), name='get_reset_password_token'),
+    path("save_forgot_password_data/",views.SaveForgotPasswordData.as_view(),name='save_forgot_password_data')
+
 ]

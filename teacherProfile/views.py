@@ -6,14 +6,7 @@ from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework import mixins
 from rest_framework.views import APIView
 from django.core import serializers as djangoSerializer
-from .serializers import (
-    TeacherBasicInfoSerializer,
-    TeacherEducationSerializer,
-    TeacherQualificationSerializer,
-    TeacherExperienceSerializer,
-    TeacherLanguageSerializer,
-    TeacherPreferenceSerializer
-)
+from . import serializers as myserializer
 from .models import (
     TeacherBasicInfo,
     TeacherEducation,
@@ -22,21 +15,22 @@ from .models import (
     TeacherQualifications,
     TeacherPreference)
 
-from utils.operations import update_with_partial
+from utils.operations import update_with_partial, update_with_partial_teacher
 from permissions import manage_permissions as perm 
 from permissions import owner_permission as owner 
 
 OPERATION_AFTER_LOGIN_PERMISSION = {'create': [IsAuthenticated],
                                     'retrieve':[IsAuthenticated & owner.TeacherIsOwner],
-                                    'update': [IsAuthenticated],
-                                    'partial_update':[IsAuthenticated]}
+                                    'update': [IsAuthenticated & owner.TeacherIsOwner],
+                                    'partial_update':[IsAuthenticated & owner.TeacherIsOwner],
+                                    'destroy':[IsAuthenticated & owner.TeacherIsOwner]}
 
 class TeacherRegistrationViewset(
     mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
     viewsets.GenericViewSet):
-    serializer_class = TeacherBasicInfoSerializer
+    serializer_class = myserializer.TeacherBasicInfoSerializer
     permission_classes_by_action = {'create': [AllowAny],
                                     'retrieve':[IsAuthenticated  & owner.TeacherIsOwnerRegistration  ],
                                     'update': [IsAuthenticated & owner.TeacherIsOwnerRegistration ],
@@ -58,8 +52,9 @@ class TeacherEducationViewset(
     mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
     viewsets.GenericViewSet):
-    serializer_class = TeacherEducationSerializer
+    serializer_class = myserializer.TeacherEducationSerializer
     permission_classes_by_action = OPERATION_AFTER_LOGIN_PERMISSION
     queryset = TeacherEducation.objects.all()
     def get_permissions(self):
@@ -79,7 +74,7 @@ class TeacherQualificationViewset(
     mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
     viewsets.GenericViewSet):
-    serializer_class = TeacherQualificationSerializer
+    serializer_class = myserializer.TeacherQualificationSerializer
     permission_classes_by_action = OPERATION_AFTER_LOGIN_PERMISSION
     queryset = TeacherQualifications.objects.all()
     def get_permissions(self):
@@ -98,8 +93,9 @@ class TeacherExperienceViewset(
     mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
     viewsets.GenericViewSet):
-    serializer_class = TeacherExperienceSerializer
+    serializer_class = myserializer.TeacherExperienceSerializer
     permission_classes_by_action = OPERATION_AFTER_LOGIN_PERMISSION
     queryset = TeacherExperience.objects.all()
     def get_permissions(self):
@@ -118,8 +114,9 @@ class TeacherLanguageViewset(
     mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
     viewsets.GenericViewSet):
-    serializer_class = TeacherLanguageSerializer
+    serializer_class = myserializer.TeacherLanguageSerializer
     permission_classes_by_action = OPERATION_AFTER_LOGIN_PERMISSION
     queryset = TeacherLanguage.objects.all()
     def get_permissions(self):
@@ -135,30 +132,52 @@ class TeacherLanguageViewset(
        return self.update(request, *args, **kwargs)
 
 class TeacherPreferenceViewset(
-    mixins.CreateModelMixin,
+    #mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
     viewsets.GenericViewSet):
-    serializer_class = TeacherPreferenceSerializer
+    serializer_class = myserializer.TeacherPreferenceSerializer
     permission_classes_by_action = OPERATION_AFTER_LOGIN_PERMISSION
     queryset = TeacherPreference.objects.all()
     def get_permissions(self):
         return perm.get_custom_permissions(self)
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_queryset().filter(teacher=request.user.teacher_user)
+        serializer = self.get_serializer(instance[0])
+        return Response(serializer.data)
+        
+
     #call put with /user/id/
     def update(self, request,  *args, **kwargs):
-       return update_with_partial(self, request,  *args, **kwargs)
+       return update_with_partial_teacher(self, request,  *args, **kwargs)
 
     #call patch with /user/id/
     def partial_update(self, request, *args, **kwargs):
        kwargs['partial'] = True
        return self.update(request, *args, **kwargs)
 
-from .serializers import TeacherProfileSerializer
-
 class TeacherProfileViewset(mixins.RetrieveModelMixin,viewsets.GenericViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = myserializer.TeacherProfileSerializer
+    queryset = TeacherBasicInfo.objects.all()
+
+    def retrieve(self, request, *args, **kwargs):
+        # do your customization here
+        instance = self.get_queryset().filter(user=request.user)
+        serializer = self.get_serializer({
+            'teacher':instance[0],
+            'education':TeacherEducation.objects.filter(teacher=instance[0]),
+            'qualification':TeacherQualifications.objects.filter(teacher=instance[0]),
+            'experience':TeacherExperience.objects.filter(teacher=instance[0]),
+            'language':TeacherLanguage.objects.filter(teacher=instance[0]),
+            'preference':TeacherPreference.objects.filter(teacher=instance[0])
+            })
+        return Response(serializer.data,status=200)
+
+class TeacherPublicProfileViewset(mixins.RetrieveModelMixin,viewsets.GenericViewSet):
     permission_classes = [AllowAny]
-    serializer_class = TeacherProfileSerializer
+    serializer_class = myserializer.TeacherPublicProfileSerializer
     queryset = TeacherBasicInfo.objects.all()
 
     def retrieve(self, request, *args, **kwargs):
