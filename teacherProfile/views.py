@@ -209,3 +209,8 @@ class BookmarkJobViewset(APIView):
             raise serializers.ValidationError("Wrong Id!")
         bookmark,_ = TeacherBookmarkedJob.objects.update_or_create(teacher=teacher,job=job)
         return Response(bookmark.job.to_dict(),status=status.HTTP_200_OK)
+
+    def delete(self, request, pk, format=None):
+        bookmark = TeacherBookmarkedJob.objects.get(job=JobInfo.objects.get(pk=pk))  
+        bookmark.delete()
+        return Response(bookmark.job.to_dict(),status=status.HTTP_200_OK)
