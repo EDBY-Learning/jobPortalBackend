@@ -13,7 +13,11 @@ from .models import (
     TeacherExperience,
     TeacherLanguage,
     TeacherQualifications,
-    TeacherPreference)
+    TeacherPreference,
+    TeacherBookmarkedJob)
+from jobPortal.models import (
+    JobInfo
+)
 
 from utils.operations import update_with_partial, update_with_partial_teacher
 from permissions import manage_permissions as perm 
@@ -193,4 +197,15 @@ class TeacherPublicProfileViewset(mixins.RetrieveModelMixin,viewsets.GenericView
             })
         return Response(serializer.data,status=200)
     
-    
+class BookmarkJobViewset(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request,format=None):
+        teacher =  request.user.teacher_user
+        jobId = request.GET.get('jobID','')
+        try:
+            job = JobInfo.objects.get(pk=jobId)
+        except IntegrityError as e:
+            raise serializers.ValidationError("Wrong Id!")
+        bookmark,_ = TeacherBookmarkedJob.objects.update_or_create(teacher=teacher,job=job)
+        return Response(bookmark.job.to_dict(),status=status.HTTP_200_OK)

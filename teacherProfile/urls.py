@@ -19,6 +19,7 @@ router.register(r'public_profile',views.TeacherPublicProfileViewset,basename="pu
 
 urlpatterns = [
     path('',include(router.urls)),
+    path("bookmark/",views.BookmarkJobViewset.as_view())
     #path('profile/<int:pk>/',views.TeacherProfile.as_view(), name='teacher_profile'),
     
 ]

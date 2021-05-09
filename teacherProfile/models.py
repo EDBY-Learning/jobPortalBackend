@@ -3,6 +3,10 @@ from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+from jobPortal.models import (
+    JobInfo
+)
+
 RWST = (
     (1, ("No")),
     (2, ("Basic")),
@@ -61,3 +65,8 @@ class TeacherPreference(models.Model):
     position = models.CharField(max_length=200)
     location = models.CharField(max_length=200)
     country = models.CharField(max_length=200)
+
+class TeacherBookmarkedJob(models.Model):
+    teacher = models.ForeignKey(TeacherBasicInfo,on_delete=models.CASCADE)
+    job = models.ForeignKey(JobInfo,on_delete=models.CASCADE)
+    entry_time = models.DateTimeField(auto_now=True, auto_now_add=False)

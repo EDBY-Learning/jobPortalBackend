@@ -14,7 +14,8 @@ from .serializers import (
     JobPostByOutsiderSerializer
 )
 from teacherProfile.models import (
-    TeacherPreference
+    TeacherPreference,
+    TeacherBookmarkedJob
 )
 from rest_framework import status
 from rest_framework import viewsets
@@ -135,11 +136,13 @@ class GetUserDashBoardData(APIView):
         
         jobs = JobInfo.objects.filter(final_q).all().order_by("-entry_time")
         all_jobs = [job.to_dict() for job in jobs]
-        
+
+        bookmarked_jobs = TeacherBookmarkedJob.objects.filter(teacher=teacher).all().order_by("-entry_time")
+        bookmarked_jobs = [job_.job.to_dict() for job_ in bookmarked_jobs]
         if len(all_jobs)>0:
-            return Response(all_jobs,status=status.HTTP_200_OK)
+            return Response({'all_jobs':all_jobs,"bookmarked_jobs":bookmarked_jobs},status=status.HTTP_200_OK)
         else:
             final_q = reduce(or_,[cou_q,loc_q])
             jobs = JobInfo.objects.filter(final_q).all().order_by("-entry_time")
             all_jobs = [job.to_dict() for job in jobs]
-            return Response(all_jobs,status=status.HTTP_200_OK)
+            return Response({'all_jobs':all_jobs,"bookmarked_jobs":bookmarked_jobs},status=status.HTTP_200_OK)
