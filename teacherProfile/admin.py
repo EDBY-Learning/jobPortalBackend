@@ -5,7 +5,8 @@ from .models import (
     TeacherExperience,
     TeacherLanguage,
     TeacherQualifications,
-    TeacherPreference)
+    TeacherPreference,
+    TeacherBookmarkedJob)
 # Register your models here.
 
 class TeacherEducationInline(admin.TabularInline):
@@ -37,10 +38,13 @@ class TeacherInfoView(admin.ModelAdmin):
         TeacherLanguageInline,
         TeacherPreferenceInline]
 
-
-
-
-
+@admin.register(TeacherBookmarkedJob)
+class TeacherBookmarkedJobView(admin.ModelAdmin):
+    list_display = ("teacher","job")
+    
+@admin.register(TeacherPreference)
+class TeacherPreferenceList(admin.ModelAdmin):
+    list_display = ("teacher","subject","position","location","country")
 
 
 
