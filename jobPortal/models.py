@@ -52,7 +52,7 @@ class JobInfo(models.Model):
     #by default edby
     isByEdby = models.BooleanField(default=True)
     message = models.TextField(blank=True,null=True)
-    entry_time = models.DateTimeField(auto_now=True, auto_now_add=False)
+    entry_time = models.DateTimeField(auto_now_add=False)
 
     def to_dict(self):
 

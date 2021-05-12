@@ -173,7 +173,7 @@ AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
 AWS_QUERYSTRING_AUTH = True
 AWS_S3_FILE_OVERWRITE = False
 AWS_QUERYSTRING_EXPIRE = 3600
-# DEFAULT_FILE_STORAGE = 'jobPortal.storage_backends.PublicMediaStorage'
+DEFAULT_FILE_STORAGE = 'jobPortal.storage_backends.PublicMediaStorage'
 PUBLIC_MEDIA_LOCATION = 'media'
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
 
