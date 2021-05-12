@@ -4,3 +4,4 @@
 logs/*/error.log
 logs/*/debug.log
 settings/configuration/dev.json
+settings/configuration/pythonanywhere.json

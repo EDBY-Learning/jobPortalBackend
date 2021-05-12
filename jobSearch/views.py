@@ -11,7 +11,8 @@ from jobPortal.models import (
 from .serializers import (
     FeedbackByUserSerializer,
     JobInfoSerializer,
-    JobPostByOutsiderSerializer
+    JobPostByOutsiderSerializer,
+    JobPostByEdbySerializer
 )
 from teacherProfile.models import (
     TeacherPreference,
@@ -92,7 +93,7 @@ class JobInfoCreateEDBYViewset(
     mixins.UpdateModelMixin,
     viewsets.GenericViewSet
     ):
-    serializer_class = JobInfoSerializer
+    serializer_class = JobPostByEdbySerializer
     permission_classes = [IsAuthenticated  & IsAdminUser] 
     queryset = JobInfo.objects.all().order_by("-entry_time")
 

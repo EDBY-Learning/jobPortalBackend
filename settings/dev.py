@@ -21,6 +21,8 @@ SECRET_KEY = env_var['Basic']['SECRET_KEY']
 DEBUG = bool(int(os.environ.get('DEBUG',0)))
 ALLOWED_HOSTS = env_var['Basic']["ALLOWED_HOSTS"]
 
+CORS_ALLOWED_ORIGINS =["https://ppritish5153.pythonanywhere.com/"]
+
 #security
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
@@ -42,16 +44,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
     'account',
     'email_sender',
     'basicDetails',
-    'teacherProfile'
+    'teacherProfile',
+    'jobPortal',
+    'crm',
+    "jobSearch"
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -144,16 +151,35 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = env_var['Static']['STATIC_URL']
-MEDIA_ROOT = env_var['Static']['MEDIA_ROOT']
-MEDIA_URL = env_var['Static']['MEDIA_URL']
-STATIC_ROOT = env_var['Static']['STATIC_ROOT']
+# STATIC_URL = env_var['Static']['STATIC_URL']
+# MEDIA_ROOT = env_var['Static']['MEDIA_ROOT']
+# MEDIA_URL = env_var['Static']['MEDIA_URL']
+# STATIC_ROOT = env_var['Static']['STATIC_ROOT']
 
+#python anywhere
+STATIC_URL = '/static/'
+MEDIA_URL = '/home/ppritish5153/base_backend/media'
+MEDIA_URL = '/media/'
+STATIC_ROOT = '/home/ppritish5153/base_backend/static'
+
+#AWS storages
+AWS_ACCESS_KEY_ID = 'AKIAYILN2NTZSFYUVN6Y' #os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = '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' #os.environ.get('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = 'jobinfo' #os.environ.get('S3_BUCKET_NAME')
+AWS_DEFAULT_ACL = None
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+AWS_QUERYSTRING_AUTH = True
+AWS_S3_FILE_OVERWRITE = False
+AWS_QUERYSTRING_EXPIRE = 3600
+# DEFAULT_FILE_STORAGE = 'jobPortal.storage_backends.PublicMediaStorage'
+PUBLIC_MEDIA_LOCATION = 'media'
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=600),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=2),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7,minutes=600),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': True,
