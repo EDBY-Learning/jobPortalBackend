@@ -19,6 +19,7 @@ from jobPortal.models import (
     JobInfo
 )
 
+from django.db.utils import IntegrityError
 from utils.operations import update_with_partial, update_with_partial_teacher
 from permissions import manage_permissions as perm 
 from permissions import owner_permission as owner 
