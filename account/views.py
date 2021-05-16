@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
+from rest_framework import serializers, viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import status
@@ -8,6 +8,7 @@ from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated#, 
 from rest_framework import mixins
 from rest_framework.views import APIView
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .serializers import ChangePasswordSerialier, ChangeForgetPasswordSerialier
 from email_sender.views import createResetMail
 from .models import ForgotPasswordData
@@ -81,3 +82,36 @@ class SaveForgotPasswordData(APIView):
         data = ForgotPasswordData.objects.create(mobile=mobile,email=email)
 
         return Response("Succesfully data sent to admin, please have patience we will respond soon",status=status.HTTP_200_OK)
+
+# from rest_framework.authtoken.views import ObtainAuthToken
+# from rest_framework.authtoken.models import Token
+
+# class AdminTokenObtainPairView(ObtainAuthToken):
+#     def post(self, request, *args, **kwargs):
+#         serializer = self.serializer_class(data=request.data,
+#                                            context={'request': request})
+#         serializer.is_valid(raise_exception=True)
+#         user = serializer.validated_data['user']
+#         if user.is_staff:
+#             token, created = Token.objects.get_or_create(user=user)
+#             return Response({
+#                 'token': token.key,
+#                 'user_id': user.pk,
+#                 'email': user.email
+#             })
+#         else:
+#             return Response("Only Admin User are allowed", status=status.HTTP_401_UNAUTHORIZED)
+
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        if not user.is_staff:
+            raise serializers.ValidationError("Only Admin User are allowed!!")
+        token = super().get_token(user)
+        return token
+
+class AdminTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer

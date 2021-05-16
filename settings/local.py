@@ -18,7 +18,7 @@ except:
     raise Exception("local configuration file not present")
 
 SECRET_KEY = env_var['Basic']["SECRET_KEY"]
-DEBUG = False#bool(int(env_var['Basic']['DEBUG']))
+DEBUG = True#bool(int(env_var['Basic']['DEBUG']))
 ALLOWED_HOSTS = ["*"]#env_var['Basic']["ALLOWED_HOSTS"]
 # print(ALLOWED_HOSTS)
 

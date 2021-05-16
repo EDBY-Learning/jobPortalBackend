@@ -21,6 +21,7 @@ router.register(r'reset_password_with_token',views.ChangeForgetPasswordViewSet,b
 urlpatterns = [
     path('',include(router.urls)),
     path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('login_admin/',views.AdminTokenObtainPairView.as_view(), name='admin_token_obtain_pair'),
     path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('login/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('logout/', TokenRefreshView.as_view(), name='token_delete'),
