@@ -36,8 +36,8 @@ class TeacherQualifications(models.Model):
     teacher = models.ForeignKey(TeacherBasicInfo,on_delete=models.CASCADE)
     degree = models.CharField(max_length=100)
     major_subject = models.CharField(max_length=100)
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.CharField(max_length=4)
+    end_date = models.CharField(max_length=4)
     score = models.CharField(max_length=20)
 
 class TeacherExperience(models.Model):

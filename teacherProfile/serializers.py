@@ -119,6 +119,17 @@ class TeacherQualificationSerializer(serializers.ModelSerializer):
         exclude  = ('teacher',)
         required_fields = ['degree','major_subject','start_date','end_date','score']
     
+    def validate_year(self,year):
+        if not YEAR_REGEX.match(year):
+            raise serializers.ValidationError("Year should be just 4 digit")
+        return year
+
+    def validate_start_date(self,start_year):
+        return self.validate_year(start_year)
+    
+    def validate_end_date(self,start_year):
+        return self.validate_year(start_year)
+    
     def create(self,validated_data):
         request = self.context.get('request',None)
         qualification = TeacherQualifications.objects.create(teacher=request.user.teacher_user,**validated_data)
