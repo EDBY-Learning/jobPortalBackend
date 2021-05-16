@@ -9,6 +9,7 @@ from rest_framework import mixins
 from rest_framework.views import APIView
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import ChangePasswordSerialier, ChangeForgetPasswordSerialier
 from email_sender.views import createResetMail
 from .models import ForgotPasswordData
@@ -101,9 +102,6 @@ class SaveForgotPasswordData(APIView):
 #             })
 #         else:
 #             return Response("Only Admin User are allowed", status=status.HTTP_401_UNAUTHORIZED)
-
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
