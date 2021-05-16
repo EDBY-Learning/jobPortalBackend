@@ -62,7 +62,7 @@ class ChangeForgetPasswordSerialier(serializers.Serializer):
     def create(self,validated_data):
         try:
             user = User.objects.get(username=validated_data['username'])
-        except IntegrityError as e:
+        except Exception as e:
             raise serializers.ValidationError("Wrong Username!")
         if user is not None:
             p0 = PasswordResetTokenGenerator()

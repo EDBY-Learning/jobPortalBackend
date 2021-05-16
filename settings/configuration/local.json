@@ -1,8 +1,8 @@
 {
     "Basic":{
-        "SECRET_KEY":"CHANGE_ME",
+        "SECRET_KEY":"5-9_748596123=a*=45126(15231%l)!$z-1=f_14523698745",
         "DEBUG":1,
-        "ALLOWED_HOSTS":["*","localhost:3000"]
+        "ALLOWED_HOSTS":["*","127.0.0.1","70f8970e0fad.ngrok.io"]
     },
     "Database":{
         "ENGINE": "django.db.backends.sqlite3",

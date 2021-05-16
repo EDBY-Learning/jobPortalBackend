@@ -1,7 +1,7 @@
 from pathlib import Path
 import os
 from datetime import timedelta
-import json 
+import json
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,8 +21,6 @@ SECRET_KEY = env_var['Basic']['SECRET_KEY']
 DEBUG = bool(int(os.environ.get('DEBUG',0)))
 ALLOWED_HOSTS = env_var['Basic']["ALLOWED_HOSTS"]
 
-CORS_ALLOWED_ORIGINS =["https://ppritish5153.pythonanywhere.com/"]
-
 #security
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
@@ -35,6 +33,9 @@ SECURE_HSTS_SECONDS = 86400  # 1 day
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOWED_ORIGINS =["https://ppritish5153.pythonanywhere.com","https://job.edbylearning.com","http://job.edbylearning.com"]
+#CORS_ORIGIN_WHITELIST = ["ppritish5153.pythonanywhere.com","https://job.edbylearning.com","http://job.edbylearning.com"]
 # Application definition
 
 INSTALLED_APPS = [
@@ -66,7 +67,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'backend.urls'
+ROOT_URLCONF = 'base_backend.urls'
 
 TEMPLATES = [
     {
@@ -101,20 +102,20 @@ DATABASES = {
 }
 
 if DEBUG:
-    DEFAULT_RENDERER_CLASSES = ('rest_framework.renderers.BrowsableAPIRenderer',)
+    DEFAULT_RENDERER_CLASSES = ('rest_framework.renderers.JSONRenderer','rest_framework.renderers.BrowsableAPIRenderer',)
 else:
-    DEFAULT_RENDERER_CLASSES = ( )
+    DEFAULT_RENDERER_CLASSES = ( 'rest_framework.renderers.JSONRenderer',)
 
 REST_FRAMEWORK= {
     'DEFAULT_AUTHENTICATION_CLASSES':(
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES':(
-        
+
     ),
     "DEFAULT_RENDERER_CLASSES":DEFAULT_RENDERER_CLASSES,
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 30
 }
 
 

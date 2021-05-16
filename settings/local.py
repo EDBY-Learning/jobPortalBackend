@@ -18,13 +18,15 @@ except:
     raise Exception("local configuration file not present")
 
 SECRET_KEY = env_var['Basic']["SECRET_KEY"]
-DEBUG = bool(int(env_var['Basic']['DEBUG']))
-ALLOWED_HOSTS = env_var['Basic']["ALLOWED_HOSTS"]
+DEBUG = False#bool(int(env_var['Basic']['DEBUG']))
+ALLOWED_HOSTS = ["*"]#env_var['Basic']["ALLOWED_HOSTS"]
+# print(ALLOWED_HOSTS)
 
-os.environ['DEBUG'] = '1'
-CORS_ALLOWED_ORIGINS =["http://localhost:3000","http://localhost:3001"]
-
+os.environ['DEBUG'] = str(int(DEBUG))
+# CORS_ALLOWED_ORIGINS =["http://localhost:3000","http://localhost:3001","http://10bf499ee6c8.ngrok.io","https://10bf499ee6c8.ngrok.io"]
+CORS_ORIGIN_ALLOW_ALL = True
 # Application definition
+# CORS_ORIGIN_WHITELIST =["http://localhost:3000","http://localhost:3001","http://10bf499ee6c8.ngrok.io","https://10bf499ee6c8.ngrok.io"]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -41,7 +43,8 @@ INSTALLED_APPS = [
     'teacherProfile',
     'jobPortal',
     'crm',
-    "jobSearch"
+    "jobSearch",
+    "edbyAdaptiveApp"
 ]
 
 MIDDLEWARE = [
@@ -99,7 +102,7 @@ REST_FRAMEWORK= {
     ),
     "DEFAULT_RENDERER_CLASSES":DEFAULT_RENDERER_CLASSES,
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 20
 }
 
 # Password validation
@@ -154,13 +157,13 @@ AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
 AWS_QUERYSTRING_AUTH = True
 AWS_S3_FILE_OVERWRITE = False
 AWS_QUERYSTRING_EXPIRE = 3600
-# DEFAULT_FILE_STORAGE = 'jobPortal.storage_backends.PublicMediaStorage'
+DEFAULT_FILE_STORAGE = 'jobPortal.storage_backends.PublicMediaStorage'
 PUBLIC_MEDIA_LOCATION = 'media'
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=300),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=2),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=4),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': True,

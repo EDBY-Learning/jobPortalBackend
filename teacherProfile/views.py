@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated 
 from rest_framework import mixins
+from rest_framework import serializers
 from rest_framework.views import APIView
 from django.core import serializers as djangoSerializer
 from . import serializers as myserializer
@@ -19,6 +20,7 @@ from jobPortal.models import (
     JobInfo
 )
 
+from django.db.utils import IntegrityError
 from utils.operations import update_with_partial, update_with_partial_teacher
 from permissions import manage_permissions as perm 
 from permissions import owner_permission as owner 
