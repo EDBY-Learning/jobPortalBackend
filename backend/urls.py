@@ -13,6 +13,7 @@ urlpatterns = [
     path('job/',include('jobPortal.urls')),
     path("crm/",include("crm.urls")),
     path('job/v2/',include('jobSearch.urls')),
+    path('edby/app/',include('edbyAdaptiveApp.urls')),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # testing_pattern = [
@@ -20,7 +21,7 @@ urlpatterns = [
 #     #path('accounts/', include('django.contrib.auth.urls')),
 # ]
 
-# if os.environ.get('ENV')=='local' and bool(int(os.environ.get("DEBUG",0)))==True:
+# if os.environ.get('ENV')=='local': #and bool(int(os.environ.get("DEBUG",0)))==True:
 #     testing_pattern.extend(urlpatterns)
 #     urlpatterns = testing_pattern
 

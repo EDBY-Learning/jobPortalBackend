@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from rest_framework import response
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -88,23 +89,20 @@ class UserFeedbackViewset(
     def get_permissions(self):
         return perm.get_custom_permissions(self)
 
-class JobInfoCreateEDBYViewset(
-    mixins.CreateModelMixin,
-    mixins.UpdateModelMixin,
-    viewsets.GenericViewSet
-    ):
-    serializer_class = JobPostByEdbySerializer
+class JobInfoCreateEDBY(APIView):
     permission_classes = [IsAuthenticated  & IsAdminUser] 
-    queryset = JobInfo.objects.all().order_by("-entry_time")
-
-    #call put with /user/id/
-    def update(self, request,  *args, **kwargs):
-       return update_with_partial(self, request,  *args, **kwargs)
-
-    #call patch with /user/id/
-    def partial_update(self, request, *args, **kwargs):
-       kwargs['partial'] = True
-       return self.update(request, *args, **kwargs)
+    def post(self,request,format=None):
+        # print(request.data)
+        job = JobInfo.objects.create(**request.POST.dict())
+        # print(job.to_dict())
+        
+        if len(request.FILES.keys())!=0:
+            # print('here')
+            key = list(request.FILES.keys())[0]
+            file_handle = request.FILES[key]
+            job.image = file_handle
+        job.save()
+        return Response("Post successful",status=status.HTTP_200_OK)
 
 class JobPostByOutsideriewset(
     mixins.CreateModelMixin,
