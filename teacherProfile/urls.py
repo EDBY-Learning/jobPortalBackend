@@ -16,11 +16,15 @@ router.register(r'language',views.TeacherLanguageViewset,basename='language_teac
 router.register(r'preference',views.TeacherPreferenceViewset,basename='preference_teacher')
 router.register(r'profile',views.TeacherProfileViewset,basename="profile_teacher")
 router.register(r'public_profile',views.TeacherPublicProfileViewset,basename="public_profile_teacher")
+router.register(r'teachers_applied_for_job',views.FetchTeacherAppliedForJob,basename="teachers_applied_for_job")
 
 urlpatterns = [
     path('',include(router.urls)),
     path("bookmark/",views.BookmarkJobViewset.as_view()),
-    path("bookmark/<int:pk>/",views.BookmarkJobViewset.as_view())
+    path("bookmark/<int:pk>/",views.BookmarkJobViewset.as_view()),
+    path("apply_for_job/",views.ApplyForAdminJobViewset.as_view()),
+    path("get_teacher_list/",views.TeacherList.as_view()),
+    path("get_mail_data/",views.MailDataView.as_view())
     #path('profile/<int:pk>/',views.TeacherProfile.as_view(), name='teacher_profile'),
     
 ]

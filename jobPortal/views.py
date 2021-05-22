@@ -3,7 +3,7 @@ import json
 from django.http import HttpResponse,JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from .models import JobInfo,JobPostByOutSider,JobSearch,UserNextClick,FeedbackByUser
+from .models import JobInfo,JobPostByOutSider,FeedbackByUser
 from operator import and_, or_
 from functools import reduce
 from django.db.models import Q
@@ -153,8 +153,6 @@ def user_next_page(request):
     from_page = data.get('from_page','')
     next_page = data.get('next_page','')
     next_obj = {"usernamefake":usernamefake,'next_page':next_page,'from_page':from_page}
-    obj_ = UserNextClick.objects.create(**next_obj)
-    obj_.save()
     return JsonResponse({"status":"success","data":next_obj},safe=False)
 
 
@@ -167,8 +165,6 @@ def get_latest_jobs(request):
     from_page = ''
     next_page = 'teacherPortalLandingPage'
     next_obj = {"usernamefake":usernamefake,'next_page':next_page,'from_page':from_page}
-    obj_ = UserNextClick.objects.create(**next_obj)
-    obj_.save()
 
     jobs = JobInfo.objects.all().order_by("-entry_time")[:14]
     all_jobs = [job.to_dict() for job in jobs]
@@ -205,9 +201,7 @@ def get_jobs(request):
 
     search_data = {'usernamefake':usernamefake,'city':','.join(locations),'positions':','.join(positions),
         'subjects':','.join(subjects),"result_count":len(all_jobs)}
-    search_obj = JobSearch.objects.create(**search_data)
-    search_obj.save()
-
+    
 
     #using crm signals
     search_data = {'user':request.user,'username':usernamefake,'city':','.join(locations),'positions':','.join(positions),
@@ -222,8 +216,7 @@ def get_jobs(request):
         jobs = JobInfo.objects.filter(final_q).all().order_by("-entry_time")
         all_jobs = [job.to_dict() for job in jobs]
         search_data = {'usernamefake':usernamefake,'city':','.join(locations),"result_count":len(all_jobs)}
-        search_obj = JobSearch.objects.create(**search_data)
-        search_obj.save()
+        
 
         return JsonResponse({"status":"success","data":all_jobs},safe=False)
 
@@ -291,18 +284,6 @@ def get_data_for_vis(request):
         return JsonResponse({"status":"success","data":data_to_return},safe=False)
     if table_name=='JobPostByOutSider':
         data_to_return = JobPostByOutSider.objects.all()
-        if len(data_to_return)==0:
-            return JsonResponse({"status":"success","data":{}},safe=False)
-        data_to_return = serialize("json", data_to_return)
-        return JsonResponse({"status":"success","data":data_to_return},safe=False)
-    if table_name=='JobSearch':
-        data_to_return = JobSearch.objects.all()
-        if len(data_to_return)==0:
-            return JsonResponse({"status":"success","data":{}},safe=False)
-        data_to_return = serialize("json", data_to_return)
-        return JsonResponse({"status":"success","data":data_to_return},safe=False)
-    if table_name=='UserNextClick':
-        data_to_return = UserNextClick.objects.all()
         if len(data_to_return)==0:
             return JsonResponse({"status":"success","data":{}},safe=False)
         data_to_return = serialize("json", data_to_return)

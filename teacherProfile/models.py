@@ -2,9 +2,11 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.contrib.auth.signals import user_logged_in
 
 from jobPortal.models import (
-    JobInfo
+    JobInfo,
+    AdminJobPost
 )
 
 RWST = (
@@ -23,6 +25,21 @@ class TeacherBasicInfo(models.Model):
     dob = models.DateField(blank=True,null=True)
     description = models.CharField(max_length=2000,blank=True,null=True)
     email = models.EmailField(max_length=150)
+    login_count = models.PositiveIntegerField(default=0,blank=True,null=True)
+
+    def to_dict(self):
+        info_dict = {}
+        for key in ['mobile','email','country']:
+            info_dict[key] = self.__dict__[key].__str__()
+        info_dict['name'] = self.user.first_name
+        info_dict['date_joined'] = self.user.date_joined
+        return info_dict
+
+# def login_user(sender, request, teacher, **kwargs):
+#     teacher.login_count = teacher.login_count + 1
+#     teacher.userprofile.save()
+
+# user_logged_in.connect(login_user)
 
 class TeacherEducation(models.Model):
     teacher = models.ForeignKey(TeacherBasicInfo,on_delete=models.CASCADE)
@@ -36,8 +53,8 @@ class TeacherQualifications(models.Model):
     teacher = models.ForeignKey(TeacherBasicInfo,on_delete=models.CASCADE)
     degree = models.CharField(max_length=100)
     major_subject = models.CharField(max_length=100)
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.CharField(max_length=4)
+    end_date = models.CharField(max_length=4)
     score = models.CharField(max_length=20)
 
 class TeacherExperience(models.Model):
@@ -69,4 +86,17 @@ class TeacherPreference(models.Model):
 class TeacherBookmarkedJob(models.Model):
     teacher = models.ForeignKey(TeacherBasicInfo,on_delete=models.CASCADE)
     job = models.ForeignKey(JobInfo,on_delete=models.CASCADE)
+    entry_time = models.DateTimeField(auto_now=True, auto_now_add=False)
+
+APPLICATION_STATUS=(
+    (1,("Applied")),
+    (2,("Sent Resume To School")),
+    (3,("Selected for Interview")),
+    (4,("Application Declined")),
+    (5,("Closed, No more application")),
+)
+class TeacherAppliedAdminJob(models.Model):
+    teacher = models.ForeignKey(TeacherBasicInfo,on_delete=models.CASCADE)
+    job = models.ForeignKey(AdminJobPost,on_delete=models.CASCADE)
+    status = models.IntegerField(choices=APPLICATION_STATUS,default=1)
     entry_time = models.DateTimeField(auto_now=True, auto_now_add=False)

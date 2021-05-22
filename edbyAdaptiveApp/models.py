@@ -16,6 +16,11 @@ BOARD = (
     (3, ("IQ"))
 )
 
+FIREBASE_CHOICE = (
+    (1,('Not Uploaded')),
+    (2,('Uploaded')),
+    (3,('Failed'))
+)
     
 class BoardClassChapter(models.Model):
     board = models.IntegerField(choices=BOARD)
@@ -51,6 +56,7 @@ class AdaptiveQuestion(models.Model):
     image = models.ImageField(upload_to=get_unique_full_path, max_length=200, blank=True, null=True)
     ques_type = models.IntegerField(choices=QUES_TYPE)
     level = models.IntegerField(validators=[MinValueValidator(0)])
+    status = models.IntegerField(choices=FIREBASE_CHOICE,default=1)
     entry_time = models.DateTimeField(auto_now=True, auto_now_add=False)
 
 class AdaptiveQuestionOptions(models.Model):

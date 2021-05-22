@@ -14,20 +14,6 @@ def get_unique_full_path(instance, filename):
     # return the whole path to the file
     return os.path.join('images/', filename)
 
-class JobSearch(models.Model):
-    city = models.CharField(max_length=200,null=True,blank=True)
-    positions = models.CharField(max_length=200,null=True,blank=True)
-    subjects = models.CharField(max_length=200,null=True,blank=True)
-    usernamefake = models.CharField(max_length=20,null=True,blank=True)
-    result_count = models.IntegerField(default=0)
-    entry_time = models.DateTimeField(auto_now=True, auto_now_add=False)
-
-class UserNextClick(models.Model):
-    usernamefake = models.CharField(max_length=20,null=True,blank=True)
-    next_page = models.CharField(max_length=20,null=True,blank=True)
-    from_page = models.CharField(max_length=20,null=True,blank=True)
-    entry_time = models.DateTimeField(auto_now=True, auto_now_add=False)
-
 class FeedbackByUser(models.Model):
     usernamefake = models.CharField(max_length=20)
     from_page = models.CharField(max_length=20,null=True,blank=True)
@@ -72,11 +58,11 @@ def remove_file_from_s3(sender, instance, **kwargs):
 
 #To remove this file from amazon S3 bucket
 class JobPostByOutSider(models.Model):
-    school = models.CharField(max_length=100,null=True,blank=True)
+    school = models.CharField(max_length=100,null=True,blank=True,default="Please see Image")
     city = models.CharField(max_length=200,null=True,blank=True)
     address = models.CharField(max_length=100,blank=True,null=True)
-    email = models.CharField(max_length=100,blank=True,null=True)
-    contact = models.CharField(max_length=50,null=True,blank=True)
+    email = models.CharField(max_length=100,blank=True,null=True,default="Please see Image for email")
+    contact = models.CharField(max_length=50,null=True,blank=True,default="Please see Image for contact")
 
     #Keeping as string field comma seperated - "Teacher,Principal"
     positions = models.CharField(max_length=200,null=True,blank=True)
@@ -96,3 +82,39 @@ class JobPostByOutSider(models.Model):
                     'message','entry_time']:
                     info_dict[key] = self.__dict__[key].__str__()
         return info_dict
+
+class AdminJobPost(models.Model):
+    school = models.CharField(max_length=100,null=True,blank=True)    
+    city = models.CharField(max_length=200)
+    address = models.CharField(max_length=100,blank=True,null=True)
+    email = models.EmailField(blank=True,null=True)
+    contact = models.CharField(blank=True,null=True, max_length=17)
+    positions = models.CharField(max_length=200,null=True,blank=True)
+    subjects = models.CharField(max_length=200,null=True,blank=True)
+    url = models.CharField(max_length=200,blank=True,null=True)
+    image = models.ImageField(upload_to=get_unique_full_path, max_length=200, blank=True, null=True)
+    message = models.TextField(blank=True,null=True)
+    isByEdby = models.BooleanField(default=True)
+    entry_time = models.DateTimeField(auto_now_add=True)
+
+    def to_dict(self):
+
+        info_dict = {}
+        for key in ['school','city','email','contact','positions','subjects','url','image',
+                    'message','entry_time','id','isByEdby']:
+                    info_dict[key] = self.__dict__[key].__str__()
+        if self.image:
+            info_dict['image_url'] = 'Confedential'#self.image.url
+        info_dict['image'] = 'Confedential'
+        return info_dict
+
+    def to_dict_confedential(self):
+        dict_ = self.to_dict()
+        dict_['email'] = 'Confedential'
+        dict_['contact'] = 'Confedential'
+        dict_['image'] = 'Confedential'
+        return dict_
+
+@receiver(models.signals.pre_delete, sender=AdminJobPost)
+def remove_admin_file_from_s3(sender, instance, **kwargs):
+    instance.image.delete(save=False)

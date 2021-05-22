@@ -1,3 +1,5 @@
+from email_sender.models import MAIL_TYPE, MailRequest
+from django.contrib import admin
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -9,6 +11,7 @@ from rest_framework.views import APIView
 from django.core import serializers as djangoSerializer
 from . import serializers as myserializer
 from .models import (
+    TeacherAppliedAdminJob,
     TeacherBasicInfo,
     TeacherEducation,
     TeacherExperience,
@@ -17,6 +20,7 @@ from .models import (
     TeacherPreference,
     TeacherBookmarkedJob)
 from jobPortal.models import (
+    AdminJobPost,
     JobInfo
 )
 
@@ -216,3 +220,44 @@ class BookmarkJobViewset(APIView):
         bookmark = TeacherBookmarkedJob.objects.get(job=JobInfo.objects.get(pk=pk))  
         bookmark.delete()
         return Response(bookmark.job.to_dict(),status=status.HTTP_200_OK)
+
+class ApplyForAdminJobViewset(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request,format=None):
+        teacher =  request.user.teacher_user
+        jobId = request.GET.get('jobID','')
+        try:
+            job = AdminJobPost.objects.get(pk=jobId)
+        except IntegrityError as e:
+            raise serializers.ValidationError("Wrong Id!")
+        jobApplication,_ = TeacherAppliedAdminJob.objects.update_or_create(teacher=teacher,job=job)
+        return Response(jobApplication.job.to_dict_confedential(),status=status.HTTP_200_OK)
+    
+    def post(self,request,format=None):
+        teacher =  request.user.teacher_user
+        jobs = TeacherAppliedAdminJob.objects.filter(teacher=teacher).all()
+        all_jobs = [{**job.job.to_dict_confedential(),"status":job.status} if job.job.isByEdby else {**job.job.to_dict(),"status":"-1"} for job in jobs]
+        return Response({'data':all_jobs},status=status.HTTP_200_OK)
+
+class FetchTeacherAppliedForJob(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = myserializer.FetchTeacherAppliedForJobSerializer
+    permission_classes = [IsAuthenticated & IsAdminUser]
+    queryset = TeacherAppliedAdminJob.objects.all()
+    pagination_class = None
+
+class TeacherList(APIView):
+    permission_classes = [IsAuthenticated & IsAdminUser]
+
+    def get(self,request,format=None):
+        teachers = TeacherBasicInfo.objects.all().order_by("user__date_joined")
+        teachers_list = [teacher.to_dict() for teacher in teachers]
+        return Response({'data':teachers_list},status=status.HTTP_200_OK)
+
+class MailDataView(APIView):
+    permission_classes = [IsAuthenticated & IsAdminUser]
+
+    def get(self,request,format=None):
+        mail_requests = MailRequest.objects.filter(mail_type=2).all().order_by("-entry_time")
+        mail_list = [mail.to_dict() for mail in mail_requests]
+        return Response({'data':mail_list},status=status.HTTP_200_OK)

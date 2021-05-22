@@ -1,27 +1,17 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from .models import JobInfo, JobPostByOutSider, JobSearch, UserNextClick,FeedbackByUser
+from .models import AdminJobPost, JobInfo, JobPostByOutSider,FeedbackByUser
 
 def publish_job(modeladmin, request, queryset):
     batch_size = 100
     data_list = [job.to_dict() for job in queryset.all()]
-    object_list = [JobInfo(**{**data,'isByEdby':False}) for data in data_list]
-    objs = JobInfo.objects.bulk_create(object_list,batch_size)
+    object_list = [AdminJobPost(**{**data,'isByEdby':False}) for data in data_list]
+    objs = AdminJobPost.objects.bulk_create(object_list,batch_size)
 
     #should we delete or just update is_published
     queryset.update(is_published=True)
     # queryset.delete()
-
-class JobSearchAdmin(admin.ModelAdmin):
-    search_fields = ('city','positions','subjects','usernamefake')
-    list_display = ('usernamefake','city','positions','subjects','result_count','entry_time')
-    ordering = ['entry_time']
-
-class UserNextClickAdmin(admin.ModelAdmin):
-    search_fields = ('usernamefake','next_page','from_page')
-    list_display =  ('usernamefake','next_page','from_page','entry_time')
-    ordering = ['entry_time']
 
 
 class FeedbackByUserAdmin(admin.ModelAdmin):
@@ -31,9 +21,9 @@ class FeedbackByUserAdmin(admin.ModelAdmin):
 
 class JobInfoAdmin(admin.ModelAdmin):
     #list_filter = ('school','city','positions','subjects','url','entry_time',)
-    list_display = [field.name for field in JobInfo._meta.get_fields() if (not field.many_to_many) and (not field.one_to_many)]
+    list_display = ['school','city','positions','subjects','email','contact','url','image']
     search_fields = ('positions', 'school', 'subjects','city' )
-    list_per_page = 10
+    list_per_page = 50
 
     ordering = ['entry_time']
     #readonly_fields = ["image_view",]
@@ -50,14 +40,16 @@ class JobInfoAdmin(admin.ModelAdmin):
             )
     )
 class JobPostByOutSiderAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in JobPostByOutSider._meta.get_fields() if (not field.many_to_many) and (not field.one_to_many)]
+    #list_display = [field.name for field in JobPostByOutSider._meta.get_fields() if (not field.many_to_many) and (not field.one_to_many)]
+    list_display = ["is_published",'school','city','positions','subjects','email','contact','message','entry_time']
     odering = ['entry_time']
     actions = [publish_job]
 
-
+class AdminJobPostAdmin(admin.ModelAdmin):
+    list_display = ["school","city","email","contact",'message',"image"]
+    search_fields = ("school","city","email","contact")
 
 admin.site.register(JobPostByOutSider,JobPostByOutSiderAdmin)
 admin.site.register(JobInfo, JobInfoAdmin)
-admin.site.register(JobSearch, JobSearchAdmin)
-admin.site.register(UserNextClick, UserNextClickAdmin)
 admin.site.register(FeedbackByUser, FeedbackByUserAdmin)
+admin.site.register(AdminJobPost,AdminJobPostAdmin)

@@ -17,3 +17,9 @@ class MailRequest(models.Model):
     mail_type = models.IntegerField(choices=MAIL_TYPE, default=1)
     status = models.IntegerField(choices=MAIL_STATUS, default=1)   
     entry_time = models.DateTimeField(auto_now=True, auto_now_add=False)
+
+    def to_dict(self):
+        info_dict = {}
+        for key in ['email','mail_type','status','message','entry_time']:
+            info_dict[key] = self.__dict__[key].__str__()
+        return info_dict
