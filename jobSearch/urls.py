@@ -19,5 +19,7 @@ urlpatterns = [
     path('search/',views.JobSearchResult.as_view()),
     path("job_by_ids/",views.GetJobViaIds.as_view()),
     path("dashboard_data/",views.GetUserDashBoardData.as_view()),
-    path("post_job_edby/",views.JobInfoCreateEDBY.as_view())
+    path("post_job_edby/",views.JobInfoCreateEDBY.as_view()),
+    path("admin_job/",views.AdminJobPostView.as_view()),
+    path("admin_job_for_teacher/",views.AdminJobPostForTeacherView.as_view())
 ]

@@ -113,10 +113,11 @@ class AdaptiveQuestionView(admin.ModelAdmin):
         "chapter_name",
         "ques_type",
         "level",
+        "status",
         "entry_time")  
 
     search_fields = ("question","chapter_topic__chapter__chapter")
-    list_filter = ("level","ques_type","chapter_topic__chapter__board","chapter_topic__chapter__class_name")
+    list_filter = ("level","status","ques_type","chapter_topic__chapter__board","chapter_topic__chapter__class_name")
 
     inlines = [
         AdaptiveQuestionTopicsInline,

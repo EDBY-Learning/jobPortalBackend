@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import (
+    TeacherAppliedAdminJob,
     TeacherBasicInfo,
     TeacherEducation,
     TeacherExperience,
@@ -27,9 +28,9 @@ class TeacherPreferenceInline(admin.TabularInline):
 
 @admin.register(TeacherBasicInfo)
 class TeacherInfoView(admin.ModelAdmin):
-    list_display = ("mobile","email","country")
+    list_display = ("mobile","email","country","login_count")
     list_filter = ("country",)
-    search_fields = ("country","description")
+    search_fields = ("mobile","email","country","description")
 
     inlines = [
         TeacherEducationInline,
@@ -40,12 +41,27 @@ class TeacherInfoView(admin.ModelAdmin):
 
 @admin.register(TeacherBookmarkedJob)
 class TeacherBookmarkedJobView(admin.ModelAdmin):
-    list_display = ("teacher","job")
+    list_display = ("teacher_name","job_id")
+
+    def teacher_name(self,x):
+        return x.teacher.user.first_name
+
+    def job_id(self,x):
+        return x.job.id
     
 @admin.register(TeacherPreference)
 class TeacherPreferenceList(admin.ModelAdmin):
     list_display = ("teacher","subject","position","location","country")
 
+@admin.register(TeacherAppliedAdminJob)
+class TeacherAppliedAdminJobView(admin.ModelAdmin):
+    list_display = ("teacher_name","job_id","status")
+
+    def teacher_name(self,x):
+        return x.teacher.user.first_name
+
+    def job_id(self,x):
+        return x.job.id
 
 
 

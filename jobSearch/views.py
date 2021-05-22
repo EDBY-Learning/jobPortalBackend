@@ -1,3 +1,4 @@
+from crm.models import SearchCRM
 from django.shortcuts import render
 from rest_framework import response
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
@@ -5,9 +6,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from jobPortal.models import (
     JobInfo,
-    JobSearch,
     JobPostByOutSider,
-    FeedbackByUser
+    FeedbackByUser,
+    AdminJobPost
 )
 from .serializers import (
     FeedbackByUserSerializer,
@@ -48,12 +49,14 @@ class JobSearchResult(APIView):
         all_jobs = [job.to_dict() for job in jobs]
         if len(all_jobs)>0:
             #print('here 1:',len(all_jobs))
+            crm = SearchCRM.objects.create(city=locations,positions=positions,subjects=subjects,result_count=len(all_jobs))
             return Response(all_jobs,status=status.HTTP_200_OK)
         else:
             final_q = reduce(or_,[pos_q,sub_q,loc_q])
             jobs = JobInfo.objects.filter(final_q).all().order_by("-entry_time")
             all_jobs = [job.to_dict() for job in jobs]
             #print('here 2:',len(all_jobs))
+            crm = SearchCRM.objects.create(city=locations,positions=positions,subjects=subjects,result_count=len(all_jobs))
             return Response(all_jobs,status=status.HTTP_200_OK)
 
 
@@ -103,6 +106,34 @@ class JobInfoCreateEDBY(APIView):
             job.image = file_handle
         job.save()
         return Response("Post successful",status=status.HTTP_200_OK)
+
+class AdminJobPostView(APIView):
+    permission_classes = [IsAuthenticated  & IsAdminUser] 
+    def get(self,request,format=None):
+        jobs = AdminJobPost.objects.all()
+        all_jobs = [job.to_dict() for job in jobs]
+        return Response({'data':all_jobs},status=status.HTTP_200_OK)
+
+    def post(self,request,format=None):
+        # print(request.data)
+        job = AdminJobPost.objects.create(**request.POST.dict())
+        # print(job.to_dict())
+        
+        if len(request.FILES.keys())!=0:
+            # print('here')
+            key = list(request.FILES.keys())[0]
+            file_handle = request.FILES[key]
+            job.image = file_handle
+        job.save()
+        return Response("Post successful",status=status.HTTP_200_OK)
+
+class AdminJobPostForTeacherView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self,request,format=None):
+        jobs = AdminJobPost.objects.all().order_by("-entry_time")
+        all_jobs = [job.to_dict_confedential() if job.isByEdby else job.to_dict() for job in jobs]
+        # all_jobs = [job.to_dict() for job in jobs]
+        return Response({'data':all_jobs},status=status.HTTP_200_OK)
 
 class JobPostByOutsideriewset(
     mixins.CreateModelMixin,

@@ -1,4 +1,7 @@
+from jobSearch.serializers import AdminJobPostSerializer
+from django.db.models import fields
 from .models import (
+    TeacherAppliedAdminJob,
     TeacherBasicInfo,
     TeacherEducation,
     TeacherExperience,
@@ -215,5 +218,10 @@ class TeacherPublicProfileSerializer(serializers.Serializer):
             'language','preference']
         exclude = ('id',)
 
- 
-    
+class FetchTeacherAppliedForJobSerializer(serializers.ModelSerializer):
+    teacher = TeacherBasicInfoSerializer()
+    job = AdminJobPostSerializer()
+    entry_time = serializers.CharField(read_only=True)
+    class Meta:
+        model = TeacherAppliedAdminJob
+        fields = "__all__"

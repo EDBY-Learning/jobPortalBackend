@@ -51,7 +51,7 @@ class ForgetPasswordView(APIView):
             p0 = PasswordResetTokenGenerator()
             tk1 = p0.make_token(user)
             try:
-                data = ForgotPasswordData.objects.create(mobile=request.data['username'],email=request.data['email'])
+                data = ForgotPasswordData.objects.get_or_create(mobile=request.data['username'],email=request.data['email'])
                 createResetMail(request.data['email'],tk1)
             except Exception as e:
                 return Response("Some problem with server check after 12-24 hours", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
