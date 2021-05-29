@@ -14,6 +14,7 @@ urlpatterns = [
     path("crm/",include("crm.urls")),
     path('job/v2/',include('jobSearch.urls')),
     path('edby/app/',include('edbyAdaptiveApp.urls')),
+    path('edby/blogs/',include('edbyAdminBlogs.urls')),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # testing_pattern = [

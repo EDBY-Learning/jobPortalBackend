@@ -12,7 +12,7 @@ MAIL_TYPE = (
 )
 
 class MailRequest(models.Model):
-    message = models.CharField(max_length=200)
+    message = models.TextField()
     email = models.EmailField(max_length=254)
     mail_type = models.IntegerField(choices=MAIL_TYPE, default=1)
     status = models.IntegerField(choices=MAIL_STATUS, default=1)   

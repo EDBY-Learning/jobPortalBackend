@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
+    'fcm_django',
     'rest_framework',
     'account',
     'email_sender',
@@ -44,7 +45,8 @@ INSTALLED_APPS = [
     'jobPortal',
     'crm',
     "jobSearch",
-    "edbyAdaptiveApp"
+    "edbyAdaptiveApp",
+    "edbyAdminBlogs"
 ]
 
 MIDDLEWARE = [
@@ -146,6 +148,11 @@ STATIC_URL = env_var['Static']['STATIC_URL']
 MEDIA_ROOT = env_var['Static']['MEDIA_ROOT']
 MEDIA_URL = env_var['Static']['MEDIA_URL']
 STATIC_ROOT = env_var['Static']['STATIC_ROOT']
+
+#FCM Token
+FCM_DJANGO_SETTINGS = {
+    "FCM_SERVER_KEY": "AAAAikgR-XU:APA91bEc2RhUrQ6ldQXNtu4_q7mlLwbO0iPtiZ3jGh4aWzhtrLiUpPxQXwNPNJCS_XzyyIYcsNuV0VpuHrN05T2DXCRPmhg776JjqCNHu997yriooid8tEifTas_LKCxORFLA9ZPq_po"
+}
 
 #AWS storages
 AWS_ACCESS_KEY_ID = 'AKIAYILN2NTZSFYUVN6Y' #os.environ.get('AWS_ACCESS_KEY_ID')

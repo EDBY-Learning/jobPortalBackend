@@ -106,13 +106,15 @@ class AdminJobPost(models.Model):
         if self.image:
             info_dict['image_url'] = 'Confedential'#self.image.url
         info_dict['image'] = 'Confedential'
+        info_dict['email'] = 'Confedential'
+        info_dict['contact'] = 'Confedential'
         return info_dict
 
     def to_dict_confedential(self):
         dict_ = self.to_dict()
-        dict_['email'] = 'Confedential'
-        dict_['contact'] = 'Confedential'
-        dict_['image'] = 'Confedential'
+        # dict_['email'] = 'Confedential'
+        # dict_['contact'] = 'Confedential'
+        # dict_['image'] = 'Confedential'
         return dict_
 
 @receiver(models.signals.pre_delete, sender=AdminJobPost)

@@ -12,12 +12,19 @@ def createWelcomeMail(email):
     mailrequest = MailRequest.objects.create(message=message,email=email)
     mailrequest.save()
 
-def createResetMail(email,token):
-    message = """
-    Hey, 
-    This is Reset mail please don't reply as you won't get response!!!
-    Token: 
-    """ +token
+def createResetMail(username,email,token):
+    message = f"""
+    Hey, \n
+    Mobile/Username: {username} \n
+    This is Reset mail please don't reply as you won't get a response!!! \n
+    Token: {token}\n\n
+    Go here: https://jobportal.edbylearning.com/dashboard/pages/examples/publicchangepassword.html?token={token} \n
+
+    And use this token to reset email. It is valid till next 48 hours. \n
+    Sorry for delay\n\n
+    Regards,\n
+    EDBY Team \n
+    """ 
     mailrequest = MailRequest.objects.create(message=message,email=email,mail_type=2)
     mailrequest.save()
 
