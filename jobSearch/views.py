@@ -28,15 +28,19 @@ from utils.operations import update_with_partial
 from operator import and_, or_
 from functools import reduce
 from django.db.models import Q
+import re
 
 # Create your views here.
 class JobSearchResult(APIView):
     permission_classes = [AllowAny]
     
     def get(self,request,format=None):
-        locations = request.GET.get('location','').split(',')
-        subjects = request.GET.get('subject','').split(',')
-        positions = request.GET.get('position','').split(',')
+        # locations = request.GET.get('location','').split(',')
+        # subjects = request.GET.get('subject','').split(',')
+        # positions = request.GET.get('position','').split(',')
+        locations = re.split('\s |, |;',request.GET.get('location',''))
+        subjects = re.split('\s |, |;',request.GET.get('subject',''))
+        positions = re.split('\s |, |;',request.GET.get('position',''))
         
         if not locations:
             return Response(data={'message':'Please pass location in request'},status=status.HTTP_412_PRECONDITION_FAILED)
@@ -49,14 +53,14 @@ class JobSearchResult(APIView):
         all_jobs = [job.to_dict() for job in jobs]
         if len(all_jobs)>0:
             #print('here 1:',len(all_jobs))
-            crm = SearchCRM.objects.create(city=locations,positions=positions,subjects=subjects,result_count=len(all_jobs))
+            crm = SearchCRM.objects.create(city=','.join(locations),positions=','.join(positions),subjects=','.join(subjects),result_count=len(all_jobs))
             return Response(all_jobs,status=status.HTTP_200_OK)
         else:
             final_q = reduce(or_,[pos_q,sub_q,loc_q])
             jobs = JobInfo.objects.filter(final_q).all().order_by("-entry_time")
             all_jobs = [job.to_dict() for job in jobs]
             #print('here 2:',len(all_jobs))
-            crm = SearchCRM.objects.create(city=locations,positions=positions,subjects=subjects,result_count=len(all_jobs))
+            crm = SearchCRM.objects.create(city=','.join(locations),positions=','.join(positions),subjects=','.join(subjects),result_count=len(all_jobs))
             return Response(all_jobs,status=status.HTTP_200_OK)
 
 

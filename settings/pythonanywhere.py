@@ -34,7 +34,7 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOWED_ORIGINS =["https://ppritish5153.pythonanywhere.com","https://job.edbylearning.com","http://job.edbylearning.com"]
+CORS_ALLOWED_ORIGINS =["https://ppritish5153.pythonanywhere.com","https://job.edbylearning.com","http://job.edbylearning.com","https://jobportal.edbylearning.com","http://jobportal.edbylearning.com"]
 #CORS_ORIGIN_WHITELIST = ["ppritish5153.pythonanywhere.com","https://job.edbylearning.com","http://job.edbylearning.com"]
 # Application definition
 
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
+    'fcm_django',
     'rest_framework',
     'account',
     'email_sender',
@@ -53,7 +54,9 @@ INSTALLED_APPS = [
     'teacherProfile',
     'jobPortal',
     'crm',
-    "jobSearch"
+    "jobSearch",
+    "edbyAdaptiveApp",
+    "edbyAdminBlogs"
 ]
 
 MIDDLEWARE = [
@@ -115,7 +118,7 @@ REST_FRAMEWORK= {
     ),
     "DEFAULT_RENDERER_CLASSES":DEFAULT_RENDERER_CLASSES,
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 30
+    'PAGE_SIZE': 50
 }
 
 
@@ -163,6 +166,11 @@ MEDIA_URL = '/home/ppritish5153/base_backend/media'
 MEDIA_URL = '/media/'
 STATIC_ROOT = '/home/ppritish5153/base_backend/static'
 
+#FCM Token
+FCM_DJANGO_SETTINGS = {
+    "FCM_SERVER_KEY": "AAAAikgR-XU:APA91bEc2RhUrQ6ldQXNtu4_q7mlLwbO0iPtiZ3jGh4aWzhtrLiUpPxQXwNPNJCS_XzyyIYcsNuV0VpuHrN05T2DXCRPmhg776JjqCNHu997yriooid8tEifTas_LKCxORFLA9ZPq_po"
+}
+
 #AWS storages
 AWS_ACCESS_KEY_ID = 'AKIAYILN2NTZSFYUVN6Y' #os.environ.get('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = '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' #os.environ.get('AWS_SECRET_ACCESS_KEY')
@@ -179,8 +187,8 @@ MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=7,minutes=600),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=30,minutes=600),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=40),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': True,
