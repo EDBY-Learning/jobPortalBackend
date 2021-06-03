@@ -250,9 +250,17 @@ class TeacherList(APIView):
     permission_classes = [IsAuthenticated & IsAdminUser]
 
     def get(self,request,format=None):
-        teachers = TeacherBasicInfo.objects.all().order_by("user__date_joined")
-        teachers_list = [teacher.to_dict() for teacher in teachers]
-        return Response({'data':teachers_list},status=status.HTTP_200_OK)
+        # teachers = TeacherBasicInfo.objects.all().order_by("user__date_joined")
+        # teachers_list = [teacher.to_dict() for teacher in teachers]
+        return Response({
+            'data':[{
+                'name':"NA",
+                "date_joined":"NA",
+                'mobile':"NA",
+                'email':"NA",
+                'country':"NA"
+                }]},
+            status=status.HTTP_200_OK)
 
 class MailDataView(APIView):
     permission_classes = [IsAuthenticated & IsAdminUser]

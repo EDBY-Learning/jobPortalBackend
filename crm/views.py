@@ -46,7 +46,8 @@ class JobsNotification(APIView):
             return URL+"?track_key="+trackkey
 
     def all_teachers(self,title,message,url,whom):
-        devices  = CustomFCMDevice.objects.filter(active=True).all()  
+        # devices  = CustomFCMDevice.objects.filter(active=True).all()  
+        devices  = CustomFCMDevice.objects.all()
         key = self.get_query_param(len(devices),whom)
         devices.send_message(title=title, body=message, click_action=self.get_url(url,key))
         return Response("Sent to "+str(len(devices)),status=200)
