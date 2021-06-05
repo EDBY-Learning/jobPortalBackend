@@ -6,8 +6,10 @@ from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 
 def createWelcomeMail(email):
     message = """
-    Hey, 
-    Welcome to our site, this is confirmation mail please don't reply as you won't get response!!!
+    Hey, \n
+    Welcome to our site, this is confirmation mail please don't reply as you won't get response!!! \n
+    Regards,\n
+    EDBY Team \n
     """
     mailrequest = MailRequest.objects.create(message=message,email=email)
     mailrequest.save()
@@ -21,7 +23,7 @@ def createResetMail(username,email,token):
     Go here: https://jobportal.edbylearning.com/dashboard/pages/examples/publicchangepassword.html?token={token} \n
 
     And use this token to reset email. It is valid till next 48 hours. \n
-    Sorry for delay\n\n
+    Sorry if any delay\n\n
     Regards,\n
     EDBY Team \n
     """ 

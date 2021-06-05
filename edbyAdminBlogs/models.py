@@ -9,11 +9,12 @@ class JobBlogs(models.Model):
     tags = models.CharField(max_length=300)
     link = models.CharField(max_length=300,blank=True,null=True)
     total_like = models.IntegerField(default=0,blank=True,null=True)
+    total_comment = models.IntegerField(default=0,blank=True,null=True)
     entry_time = models.DateTimeField(auto_now=False,auto_now_add=True)
     
     def to_dict(self):
         info_dict = {}
-        for key in ["id",'title','body','link','tags','total_like','entry_time']:
+        for key in ["id",'title','body','link','tags','total_like','total_comment','entry_time']:
             info_dict[key] = self.__dict__[key].__str__()
         info_dict['user'] = {'first_name':self.user.first_name}
         return info_dict

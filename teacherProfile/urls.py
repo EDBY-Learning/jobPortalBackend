@@ -17,6 +17,7 @@ router.register(r'preference',views.TeacherPreferenceViewset,basename='preferenc
 router.register(r'profile',views.TeacherProfileViewset,basename="profile_teacher")
 router.register(r'public_profile',views.TeacherPublicProfileViewset,basename="public_profile_teacher")
 router.register(r'teachers_applied_for_job',views.FetchTeacherAppliedForJob,basename="teachers_applied_for_job")
+router.register(r'basic_profile',views.TeacherBasicProfileViewset,basename="basic_profile")
 
 urlpatterns = [
     path('',include(router.urls)),

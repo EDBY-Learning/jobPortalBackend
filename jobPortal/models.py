@@ -60,6 +60,7 @@ def remove_file_from_s3(sender, instance, **kwargs):
 class JobPostByOutSider(models.Model):
     school = models.CharField(max_length=100,null=True,blank=True,default="Please see Image")
     city = models.CharField(max_length=200,null=True,blank=True)
+    country = models.CharField(max_length=100)
     address = models.CharField(max_length=100,blank=True,null=True)
     email = models.CharField(max_length=100,blank=True,null=True,default="Please see Image for email")
     contact = models.CharField(max_length=50,null=True,blank=True,default="Please see Image for contact")
@@ -86,6 +87,7 @@ class JobPostByOutSider(models.Model):
 class AdminJobPost(models.Model):
     school = models.CharField(max_length=100,null=True,blank=True)    
     city = models.CharField(max_length=200)
+    country = models.CharField(max_length=100)
     address = models.CharField(max_length=100,blank=True,null=True)
     email = models.EmailField(blank=True,null=True)
     contact = models.CharField(blank=True,null=True, max_length=17)
@@ -100,7 +102,7 @@ class AdminJobPost(models.Model):
     def to_dict(self):
 
         info_dict = {}
-        for key in ['school','city','email','contact','positions','subjects','url','image',
+        for key in ['school','city','country','email','contact','positions','subjects','url','image',
                     'message','entry_time','id','isByEdby']:
                     info_dict[key] = self.__dict__[key].__str__()
         if self.image:

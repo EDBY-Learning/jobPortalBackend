@@ -185,6 +185,18 @@ class TeacherProfileViewset(mixins.RetrieveModelMixin,viewsets.GenericViewSet):
             })
         return Response(serializer.data,status=200)
 
+class TeacherBasicProfileViewset(mixins.RetrieveModelMixin,viewsets.GenericViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = myserializer.TeacherBasicProfileSerializer
+    queryset = TeacherBasicInfo.objects.all()
+
+    def retrieve(self, request, *args, **kwargs):
+        # do your customization here
+        serializer = self.get_serializer({
+            'teacher':self.get_queryset().filter(user=request.user).first(),
+            })
+        return Response(serializer.data,status=200)
+
 class TeacherPublicProfileViewset(mixins.RetrieveModelMixin,viewsets.GenericViewSet):
     permission_classes = [AllowAny]
     serializer_class = myserializer.TeacherPublicProfileSerializer
@@ -236,8 +248,9 @@ class ApplyForAdminJobViewset(APIView):
     
     def post(self,request,format=None):
         teacher =  request.user.teacher_user
+        prefernce = TeacherPreference.objects.get(teacher=teacher)
         jobs = TeacherAppliedAdminJob.objects.filter(teacher=teacher).all()
-        all_jobs = [{**job.job.to_dict_confedential(),"status":job.status} if job.job.isByEdby else {**job.job.to_dict(),"status":"-1"} for job in jobs]
+        all_jobs = [{**job.job.to_dict_confedential(),"status":job.status}  for job in jobs if job.job.country==prefernce.country]
         return Response({'data':all_jobs},status=status.HTTP_200_OK)
 
 class FetchTeacherAppliedForJob(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -250,9 +263,17 @@ class TeacherList(APIView):
     permission_classes = [IsAuthenticated & IsAdminUser]
 
     def get(self,request,format=None):
-        teachers = TeacherBasicInfo.objects.all().order_by("user__date_joined")
-        teachers_list = [teacher.to_dict() for teacher in teachers]
-        return Response({'data':teachers_list},status=status.HTTP_200_OK)
+        # teachers = TeacherBasicInfo.objects.all().order_by("user__date_joined")
+        # teachers_list = [teacher.to_dict() for teacher in teachers]
+        return Response({
+            'data':[{
+                'name':"NA",
+                "date_joined":"NA",
+                'mobile':"NA",
+                'email':"NA",
+                'country':"NA"
+                }]},
+            status=status.HTTP_200_OK)
 
 class MailDataView(APIView):
     permission_classes = [IsAuthenticated & IsAdminUser]

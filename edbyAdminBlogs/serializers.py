@@ -53,6 +53,10 @@ class JobBlogsCommentSerializer(serializers.ModelSerializer):
         blog = JobBlogs.objects.get(id=validated_data.pop("blogId"))
         request = self.context.get('request',None)
         comment = JobBlogsComment.objects.create(blog=blog,user=request.user,**validated_data)
+        # total_comment = JobBlogsComment.objects.filter(blog=blog,like=True).count()
+        total_comment = blog.total_comment +1
+        blog.total_comment =  total_comment
+        blog.save()
         return comment
 
 class FetchBlogDetailSerializer(serializers.Serializer):

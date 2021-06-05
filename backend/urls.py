@@ -15,6 +15,7 @@ urlpatterns = [
     path('job/v2/',include('jobSearch.urls')),
     path('edby/app/',include('edbyAdaptiveApp.urls')),
     path('edby/blogs/',include('edbyAdminBlogs.urls')),
+    path('edbylearning/',include('edbylearning_signup_demo.urls')),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # testing_pattern = [
@@ -25,5 +26,9 @@ urlpatterns = [
 # if os.environ.get('ENV')=='local': #and bool(int(os.environ.get("DEBUG",0)))==True:
 #     testing_pattern.extend(urlpatterns)
 #     urlpatterns = testing_pattern
-
-
+from crm.models import SearchCRM
+def setup():
+    SearchCRM.objects.all().delete()
+y = 'no'
+if y=='yes':
+    setup()

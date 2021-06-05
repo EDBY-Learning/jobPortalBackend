@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'crm',
     "jobSearch",
     "edbyAdaptiveApp",
-    "edbyAdminBlogs"
+    "edbyAdminBlogs",
+    "edbylearning_signup_demo"
 ]
 
 MIDDLEWARE = [
@@ -148,6 +149,8 @@ STATIC_URL = env_var['Static']['STATIC_URL']
 MEDIA_ROOT = env_var['Static']['MEDIA_ROOT']
 MEDIA_URL = env_var['Static']['MEDIA_URL']
 STATIC_ROOT = env_var['Static']['STATIC_ROOT']
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #FCM Token
 FCM_DJANGO_SETTINGS = {
