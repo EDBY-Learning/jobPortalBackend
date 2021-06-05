@@ -57,6 +57,16 @@ class JobPostByOutsiderSerializer(serializers.ModelSerializer):
         if city.strip()=="":
             raise serializers.ValidationError("City can't be empty!")
         return city
+    
+    def validate_country(self,country):
+        if country.strip()=="":
+            raise serializers.ValidationError("Country can't be empty!")
+        return country
+
+    def validate_subjects(self,subjects):
+        if subjects.strip()=="":
+            raise serializers.ValidationError("Subjects can't be empty!")
+        return subjects
 
     def validate_positions(self,positions):
         if positions.strip()=="":
@@ -64,8 +74,8 @@ class JobPostByOutsiderSerializer(serializers.ModelSerializer):
         return positions
 
     def validate(self,data):
-        if data['contact'].strip()==""  and data['email'].strip()=="":
-            raise serializers.ValidationError("Email or contact number should be provided")
+        if data['contact'].strip()==""  or data['email'].strip()=="":
+            raise serializers.ValidationError("Email and contact number should be provided")
         return data
 
 class JobPostByEdbySerializer(serializers.ModelSerializer):

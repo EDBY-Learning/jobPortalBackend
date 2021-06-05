@@ -38,21 +38,32 @@ class ForgetPasswordView(APIView):
     permission_classes = [AllowAny]
     
     def post(self,request):
-        if request.data['email'] == None:
-            return Response("Please provide email", status=status.HTTP_404_NOT_FOUND)
-        if request.data['username'] == None:
+        # if request.data['email'] == None:
+        #     return Response("Please provide email", status=status.HTTP_404_NOT_FOUND)
+        username = request.data['username']
+        if username == None:
             return Response("Please provide username", status=status.HTTP_404_NOT_FOUND)
         try:
-            user = User.objects.get(username=request.data['username'])
+            user = User.objects.get(username=username)
         except Exception as e:
             return Response("No user of this name", status=status.HTTP_404_NOT_FOUND)
+        try:
+            email = user.teacher_user.email
+        except Exception as e:
+            email = user.email
 
         if user is not None:
             p0 = PasswordResetTokenGenerator()
             tk1 = p0.make_token(user)
             try:
-                data = ForgotPasswordData.objects.get_or_create(mobile=request.data['username'],email=request.data['email'])
-                createResetMail(request.data['username'],request.data['email'],tk1)
+                data = ForgotPasswordData.objects.update_or_create(
+                    username=username,
+                    defaults={
+                        "email":email,
+                        "status":False,
+                        "mail_status":1
+                })
+                createResetMail(username,email,tk1)
             except Exception as e:
                 return Response("Some problem with server check after 12-24 hours", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             return Response("Please check your mail in 30-60 min", status=status.HTTP_200_OK)
@@ -103,7 +114,7 @@ class SaveForgotPasswordData(APIView):
 #         else:
 #             return Response("Only Admin User are allowed", status=status.HTTP_401_UNAUTHORIZED)
 
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+class AdminTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         if not user.is_staff:
@@ -112,4 +123,4 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         return token
 
 class AdminTokenObtainPairView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializer
+    serializer_class = AdminTokenObtainPairSerializer

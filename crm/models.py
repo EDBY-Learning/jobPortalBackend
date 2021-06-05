@@ -24,7 +24,12 @@ class SearchCRM(models.Model):
     subjects = models.CharField(max_length=200,null=True,blank=True)
     result_count = models.IntegerField(default=0)
     is_forced = models.BooleanField(default=False)
+    count = models.IntegerField(default=0)
     entry_time = models.DateTimeField(auto_now=True, auto_now_add=False)
+
+    def save(self, *args, **kwargs):
+        self.count = self.count+1
+        super().save(*args, **kwargs)
 
 class CustomFCMDevice(AbstractFCMDevice):
     DEVICE_TYPES = (

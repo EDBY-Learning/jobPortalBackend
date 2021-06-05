@@ -218,6 +218,11 @@ class TeacherPublicProfileSerializer(serializers.Serializer):
             'language','preference']
         exclude = ('id',)
 
+class TeacherBasicProfileSerializer(serializers.Serializer):
+    teacher = TeacherBasicInfoSerializer(read_only=True)
+    class Meta:
+        fields = ['teacher']
+        
 class FetchTeacherAppliedForJobSerializer(serializers.ModelSerializer):
     teacher = TeacherBasicInfoSerializer()
     job = AdminJobPostSerializer()

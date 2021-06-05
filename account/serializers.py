@@ -1,4 +1,4 @@
-from account.models import ChangedForgotPassword
+from account.models import ForgotPasswordData
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from django.conf import settings
@@ -70,7 +70,12 @@ class ChangeForgetPasswordSerialier(serializers.Serializer):
             if p0.check_token(user,validated_data['token']):
                 user.set_password(validated_data['new_password'])
                 user.save()
-                _ = ChangedForgotPassword.objects.create(username=validated_data['username'])
+                _ = ForgotPasswordData.objects.update_or_create(
+                    username=validated_data['username'],
+                    defaults={
+                        "status":True,
+                        "mail_status":2
+                })
                 return user
             else:
                 raise serializers.ValidationError("Wrong Token! No authentication!")

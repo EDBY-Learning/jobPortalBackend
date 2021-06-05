@@ -38,9 +38,12 @@ class JobSearchResult(APIView):
         # locations = request.GET.get('location','').split(',')
         # subjects = request.GET.get('subject','').split(',')
         # positions = request.GET.get('position','').split(',')
-        locations = re.split('\s |, |;',request.GET.get('location',''))
-        subjects = re.split('\s |, |;',request.GET.get('subject',''))
-        positions = re.split('\s |, |;',request.GET.get('position',''))
+        raw_location = request.GET.get('location','')
+        locations = re.split('\s |, |;',raw_location)
+        raw_subject = request.GET.get('subject','')
+        subjects = re.split('\s |, |;',raw_subject)
+        raw_position = request.GET.get('position','')
+        positions = re.split('\s |, |;',raw_position)
         
         if not locations:
             return Response(data={'message':'Please pass location in request'},status=status.HTTP_412_PRECONDITION_FAILED)
@@ -53,14 +56,20 @@ class JobSearchResult(APIView):
         all_jobs = [job.to_dict() for job in jobs]
         if len(all_jobs)>0:
             #print('here 1:',len(all_jobs))
-            crm = SearchCRM.objects.create(city=','.join(locations),positions=','.join(positions),subjects=','.join(subjects),result_count=len(all_jobs))
+            crm = SearchCRM.objects.update_or_create(city=raw_location,positions=raw_position,subjects=raw_subject,defaults={
+                "result_count":len(all_jobs)
+            })
+            # crm = SearchCRM.objects.create(city=raw_location,positions=raw_position,subjects=raw_subject,result_count=len(all_jobs))
             return Response(all_jobs,status=status.HTTP_200_OK)
         else:
             final_q = reduce(or_,[pos_q,sub_q,loc_q])
             jobs = JobInfo.objects.filter(final_q).all().order_by("-entry_time")
             all_jobs = [job.to_dict() for job in jobs]
             #print('here 2:',len(all_jobs))
-            crm = SearchCRM.objects.create(city=','.join(locations),positions=','.join(positions),subjects=','.join(subjects),result_count=len(all_jobs))
+            crm = SearchCRM.objects.update_or_create(city=raw_location,positions=raw_position,subjects=raw_subject,defaults={
+                "result_count":len(all_jobs)
+            })
+            # crm = SearchCRM.objects.create(city=raw_location,positions=raw_position,subjects=raw_subject,result_count=len(all_jobs))
             return Response(all_jobs,status=status.HTTP_200_OK)
 
 
@@ -134,10 +143,13 @@ class AdminJobPostView(APIView):
 class AdminJobPostForTeacherView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self,request,format=None):
-        jobs = AdminJobPost.objects.all().order_by("-entry_time")
-        all_jobs = [job.to_dict_confedential() if job.isByEdby else job.to_dict() for job in jobs]
+        teacher =  request.user.teacher_user
+        prefernce = TeacherPreference.objects.get(teacher=teacher)
+        cou_q = reduce(or_,[Q(country__icontains=country) for country in prefernce.country.split(',')])
+        jobs = AdminJobPost.objects.filter(cou_q).all().order_by("-entry_time")
+        all_jobs = [job.to_dict_confedential() for job in jobs]
         # all_jobs = [job.to_dict() for job in jobs]
-        return Response({'data':all_jobs},status=status.HTTP_200_OK)
+        return Response({'data':all_jobs,'country':prefernce.country},status=status.HTTP_200_OK)
 
 class JobPostByOutsideriewset(
     mixins.CreateModelMixin,

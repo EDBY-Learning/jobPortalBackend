@@ -70,7 +70,10 @@ class FetchBlogDetailViewset(mixins.RetrieveModelMixin,viewsets.GenericViewSet):
         # do your customization here
         instance = self.get_object()
         if request.user.is_authenticated:
-            userLike = JobBlogsLikeDislike.objects.get(blog=instance,user=request.user)
+            try:
+                userLike = JobBlogsLikeDislike.objects.filter(blog=instance,user=request.user).first()
+            except Exception as e:
+                userLike = None
         else:
             userLike = None
         serializer = self.get_serializer({
@@ -109,8 +112,9 @@ class JobBlogLike(APIView):
         user_like = int(request.data.get('like',1))
         blog = JobBlogs.objects.get(id=blogId)
         like_saved = JobBlogsLikeDislike.objects.update_or_create(user=request.user,blog=blog,defaults={"like":bool(user_like)})
-        total_like = JobBlogsLikeDislike.objects.filter(blog=blog,like=True).count()
-        blog.total_like = total_like
+        # total_like = JobBlogsLikeDislike.objects.filter(blog=blog,like=True).count()
+        total_like  = blog.total_like + 1
+        blog.total_like = total_like 
         blog.save()
         return Response({'data':user_like,'total_like':total_like},status=status.HTTP_200_OK)
 

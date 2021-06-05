@@ -11,7 +11,7 @@ class ClickCRMView(admin.ModelAdmin):
 
 @admin.register(SearchCRM)
 class SearchCRMView(admin.ModelAdmin):
-    list_display = ("city","positions","subjects","result_count","username","entry_time")
+    list_display = ("city","positions","subjects","result_count","username","count","entry_time")
     # list_filter  = ("subjects","positions")
     search_fields = ("city","positions","subjects")
 
