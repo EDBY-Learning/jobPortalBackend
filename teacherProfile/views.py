@@ -174,14 +174,14 @@ class TeacherProfileViewset(mixins.RetrieveModelMixin,viewsets.GenericViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         # do your customization here
-        instance = self.get_queryset().filter(user=request.user)
+        instance = request.user.teacher_user
         serializer = self.get_serializer({
-            'teacher':instance[0],
-            'education':TeacherEducation.objects.filter(teacher=instance[0]),
-            'qualification':TeacherQualifications.objects.filter(teacher=instance[0]),
-            'experience':TeacherExperience.objects.filter(teacher=instance[0]),
-            'language':TeacherLanguage.objects.filter(teacher=instance[0]),
-            'preference':TeacherPreference.objects.filter(teacher=instance[0])
+            'teacher':instance,
+            'education':instance.teacher_education,
+            'qualification':instance.teacher_qualification,
+            'experience':instance.teacher_experience,
+            'language':instance.teacher_language,
+            'preference':instance.teacher_prefernce
             })
         return Response(serializer.data,status=200)
 
@@ -193,12 +193,14 @@ class TeacherBasicProfileViewset(mixins.RetrieveModelMixin,viewsets.GenericViewS
     def retrieve(self, request, *args, **kwargs):
         # do your customization here
         serializer = self.get_serializer({
-            'teacher':self.get_queryset().filter(user=request.user).first(),
+            'teacher':request.user.teacher_user
             })
         return Response(serializer.data,status=200)
 
+# from rest_framework.throttling import UserRateThrottle
 class TeacherPublicProfileViewset(mixins.RetrieveModelMixin,viewsets.GenericViewSet):
     permission_classes = [AllowAny]
+    # throttle_classes = [UserRateThrottle]
     serializer_class = myserializer.TeacherPublicProfileSerializer
     queryset = TeacherBasicInfo.objects.all()
 
@@ -207,11 +209,11 @@ class TeacherPublicProfileViewset(mixins.RetrieveModelMixin,viewsets.GenericView
         instance = self.get_object()
         serializer = self.get_serializer({
             'teacher':instance,
-            'education':TeacherEducation.objects.filter(teacher=instance),
-            'qualification':TeacherQualifications.objects.filter(teacher=instance),
-            'experience':TeacherExperience.objects.filter(teacher=instance),
-            'language':TeacherLanguage.objects.filter(teacher=instance),
-            'preference':TeacherPreference.objects.filter(teacher=instance)
+            'education':instance.teacher_education,
+            'qualification':instance.teacher_qualification,
+            'experience':instance.teacher_experience,
+            'language':instance.teacher_language,
+            'preference':instance.teacher_prefernce
             })
         return Response(serializer.data,status=200)
     
@@ -229,7 +231,9 @@ class BookmarkJobViewset(APIView):
         return Response(bookmark.job.to_dict(),status=status.HTTP_200_OK)
 
     def delete(self, request, pk, format=None):
-        bookmark = TeacherBookmarkedJob.objects.get(job=JobInfo.objects.get(pk=pk))  
+        #BUG: Solved
+        teacher =  request.user.teacher_user
+        bookmark = TeacherBookmarkedJob.objects.get(teacher=teacher,job=JobInfo.objects.get(pk=pk))  
         bookmark.delete()
         return Response(bookmark.job.to_dict(),status=status.HTTP_200_OK)
 
@@ -248,8 +252,8 @@ class ApplyForAdminJobViewset(APIView):
     
     def post(self,request,format=None):
         teacher =  request.user.teacher_user
-        prefernce = TeacherPreference.objects.get(teacher=teacher)
-        jobs = TeacherAppliedAdminJob.objects.filter(teacher=teacher).all()
+        prefernce = teacher.teacher_prefernce
+        jobs = teacher.teacher_applied_admin_jobs.all()
         all_jobs = [{**job.job.to_dict_confedential(),"status":job.status}  for job in jobs if job.job.country==prefernce.country]
         return Response({'data':all_jobs},status=status.HTTP_200_OK)
 

@@ -196,7 +196,7 @@ class TeacherProfileSerializer(serializers.Serializer):
     qualification = TeacherQualificationSerializer(read_only=True,many=True)
     experience = TeacherExperienceSerializer(read_only=True,many=True)
     language = TeacherLanguageSerializer(read_only=True,many=True)
-    preference = TeacherPreferenceSerializer(read_only=True,many=True)
+    preference = TeacherPreferenceSerializer(read_only=True)
     id = serializers.CharField(read_only=True)
     class Meta:
         fields = [
@@ -210,7 +210,7 @@ class TeacherPublicProfileSerializer(serializers.Serializer):
     qualification = TeacherQualificationSerializer(read_only=True,many=True)
     experience = TeacherExperienceSerializer(read_only=True,many=True)
     language = TeacherLanguageSerializer(read_only=True,many=True)
-    preference = TeacherPreferenceSerializer(read_only=True,many=True)
+    preference = TeacherPreferenceSerializer(read_only=True)
     class Meta:
         fields = [
             'teacher','education',

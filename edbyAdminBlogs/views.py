@@ -119,7 +119,7 @@ class JobBlogLike(APIView):
         return Response({'data':user_like,'total_like':total_like},status=status.HTTP_200_OK)
 
 class FetchBlogCommentsViewset(mixins.RetrieveModelMixin,viewsets.GenericViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     serializer_class = mySerializers.FetchBlogCommentsSerializer
     queryset = JobBlogs.objects.all().order_by("-entry_time")
 

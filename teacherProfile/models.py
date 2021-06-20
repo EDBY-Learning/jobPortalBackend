@@ -42,7 +42,7 @@ class TeacherBasicInfo(models.Model):
 # user_logged_in.connect(login_user)
 
 class TeacherEducation(models.Model):
-    teacher = models.ForeignKey(TeacherBasicInfo,on_delete=models.CASCADE)
+    teacher = models.ForeignKey(TeacherBasicInfo,on_delete=models.CASCADE,related_name="teacher_education")
     degree = models.CharField(max_length=100)
     institute_name = models.CharField(max_length=100)
     start_year = models.CharField(max_length=4)
@@ -50,7 +50,7 @@ class TeacherEducation(models.Model):
     score = models.CharField(max_length=20)
 
 class TeacherQualifications(models.Model):
-    teacher = models.ForeignKey(TeacherBasicInfo,on_delete=models.CASCADE)
+    teacher = models.ForeignKey(TeacherBasicInfo,on_delete=models.CASCADE,related_name="teacher_qualification")
     degree = models.CharField(max_length=100)
     major_subject = models.CharField(max_length=100)
     start_date = models.CharField(max_length=4)
@@ -58,7 +58,7 @@ class TeacherQualifications(models.Model):
     score = models.CharField(max_length=20)
 
 class TeacherExperience(models.Model):
-    teacher = models.ForeignKey(TeacherBasicInfo,on_delete=models.CASCADE)
+    teacher = models.ForeignKey(TeacherBasicInfo,on_delete=models.CASCADE,related_name="teacher_experience")
     institute = models.CharField(max_length=100)
     start_year = models.CharField(max_length=4)
     end_year = models.CharField(max_length=4,blank=True,null=True)
@@ -69,7 +69,7 @@ class TeacherExperience(models.Model):
     classes = models.CharField(max_length=100)
 
 class TeacherLanguage(models.Model):
-    teacher = models.ForeignKey(TeacherBasicInfo,on_delete=models.CASCADE)
+    teacher = models.ForeignKey(TeacherBasicInfo,on_delete=models.CASCADE,related_name="teacher_language")
     language = models.CharField(max_length=30)
     can_write = models.IntegerField(choices=RWST,default=3)
     can_read = models.IntegerField(choices=RWST,default=3)
@@ -77,14 +77,14 @@ class TeacherLanguage(models.Model):
     can_teach = models.IntegerField(choices=RWST,default=3)
  
 class TeacherPreference(models.Model):
-    teacher = models.OneToOneField(TeacherBasicInfo,on_delete=models.CASCADE)
+    teacher = models.OneToOneField(TeacherBasicInfo,on_delete=models.CASCADE,related_name="teacher_prefernce")
     subject = models.CharField(max_length=200)
     position = models.CharField(max_length=200)
     location = models.CharField(max_length=200)
     country = models.CharField(max_length=200)
 
 class TeacherBookmarkedJob(models.Model):
-    teacher = models.ForeignKey(TeacherBasicInfo,on_delete=models.CASCADE)
+    teacher = models.ForeignKey(TeacherBasicInfo,on_delete=models.CASCADE,related_name="teacher_bookmarks")
     job = models.ForeignKey(JobInfo,on_delete=models.CASCADE)
     entry_time = models.DateTimeField(auto_now=True, auto_now_add=False)
 
@@ -96,7 +96,7 @@ APPLICATION_STATUS=(
     (5,("Closed, No more application")),
 )
 class TeacherAppliedAdminJob(models.Model):
-    teacher = models.ForeignKey(TeacherBasicInfo,on_delete=models.CASCADE)
+    teacher = models.ForeignKey(TeacherBasicInfo,on_delete=models.CASCADE,related_name="teacher_applied_admin_jobs")
     job = models.ForeignKey(AdminJobPost,on_delete=models.CASCADE)
     status = models.IntegerField(choices=APPLICATION_STATUS,default=1)
     entry_time = models.DateTimeField(auto_now=True, auto_now_add=False)

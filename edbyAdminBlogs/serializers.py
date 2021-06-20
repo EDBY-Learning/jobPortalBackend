@@ -11,8 +11,8 @@ class JobBlogsSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     class Meta:
         model = JobBlogs
-        fields = ("id","title","body","link","user","tags","total_like","entry_time")
-        read_only_fields = ('id',"total_like","entry_time","user")
+        fields = ("id","title","body","link","user","tags","total_like","total_comment","entry_time")
+        read_only_fields = ('id',"total_like","total_comment","entry_time","user")
         extra_kwargs = {
             'title':{'required':True},
             'body':{'required':True}

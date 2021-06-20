@@ -28,7 +28,7 @@ class TeacherPreferenceInline(admin.TabularInline):
 
 @admin.register(TeacherBasicInfo)
 class TeacherInfoView(admin.ModelAdmin):
-    list_display = ("mobile","email","country","login_count")
+    list_display = ("mobile","email","country")
     list_filter = ("country",)
     search_fields = ("mobile","email","country","description")
 
