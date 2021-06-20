@@ -21,5 +21,6 @@ urlpatterns = [
     path("dashboard_data/",views.GetUserDashBoardData.as_view()),
     path("post_job_edby/",views.JobInfoCreateEDBY.as_view()),
     path("admin_job/",views.AdminJobPostView.as_view()),
-    path("admin_job_for_teacher/",views.AdminJobPostForTeacherView.as_view())
+    path("admin_job_for_teacher/",views.AdminJobPostForTeacherView.as_view()),
+    path("search_dashboard/",views.GetUserSearchDashBoardData.as_view())
 ]

@@ -1,10 +1,10 @@
 # SC-backend
 
 ### To run locally
-> python manage.py runserver --env=local
+> python manage.py --env=local  runserver
 
 ### To run in dev
-> python manage.py runserver --env=dev 
+> python manage.py --env=dev runserver 
 > python manage.py runserver
 
 ## To deploy 

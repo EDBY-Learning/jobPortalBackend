@@ -16,6 +16,7 @@ urlpatterns = [
     path('edby/app/',include('edbyAdaptiveApp.urls')),
     path('edby/blogs/',include('edbyAdminBlogs.urls')),
     path('edbylearning/',include('edbylearning_signup_demo.urls')),
+    path('skill_development/',include('skillDevelopment.urls')),
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # testing_pattern = [

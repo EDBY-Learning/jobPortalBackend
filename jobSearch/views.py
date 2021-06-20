@@ -38,11 +38,11 @@ class JobSearchResult(APIView):
         # locations = request.GET.get('location','').split(',')
         # subjects = request.GET.get('subject','').split(',')
         # positions = request.GET.get('position','').split(',')
-        raw_location = request.GET.get('location','')
+        raw_location = request.GET.get('location','').lower()
         locations = re.split('\s |, |;',raw_location)
-        raw_subject = request.GET.get('subject','')
+        raw_subject = request.GET.get('subject','').lower()
         subjects = re.split('\s |, |;',raw_subject)
-        raw_position = request.GET.get('position','')
+        raw_position = request.GET.get('position','').lower()
         positions = re.split('\s |, |;',raw_position)
         
         if not locations:
@@ -53,7 +53,7 @@ class JobSearchResult(APIView):
         loc_q = reduce(or_,[Q(city__icontains=location) for location in locations])
         final_q = reduce(and_,[pos_q,sub_q,loc_q])
         jobs = JobInfo.objects.filter(final_q).all().order_by("-entry_time")
-        all_jobs = [job.to_dict() for job in jobs]
+        all_jobs = [job.to_dict() for job in jobs[:100]]
         if len(all_jobs)>0:
             #print('here 1:',len(all_jobs))
             crm = SearchCRM.objects.update_or_create(city=raw_location,positions=raw_position,subjects=raw_subject,defaults={
@@ -64,7 +64,7 @@ class JobSearchResult(APIView):
         else:
             final_q = reduce(or_,[pos_q,sub_q,loc_q])
             jobs = JobInfo.objects.filter(final_q).all().order_by("-entry_time")
-            all_jobs = [job.to_dict() for job in jobs]
+            all_jobs = [job.to_dict() for job in jobs[:100]]
             #print('here 2:',len(all_jobs))
             crm = SearchCRM.objects.update_or_create(city=raw_location,positions=raw_position,subjects=raw_subject,defaults={
                 "result_count":len(all_jobs)
@@ -144,7 +144,7 @@ class AdminJobPostForTeacherView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self,request,format=None):
         teacher =  request.user.teacher_user
-        prefernce = TeacherPreference.objects.get(teacher=teacher)
+        prefernce = teacher.teacher_prefernce
         cou_q = reduce(or_,[Q(country__icontains=country) for country in prefernce.country.split(',')])
         jobs = AdminJobPost.objects.filter(cou_q).all().order_by("-entry_time")
         all_jobs = [job.to_dict_confedential() for job in jobs]
@@ -172,7 +172,7 @@ class GetUserDashBoardData(APIView):
 
     def get(self,request,format=None):
         teacher =  request.user.teacher_user
-        prefernce = TeacherPreference.objects.get(teacher=teacher)
+        prefernce = teacher.teacher_prefernce
 
         pos_q = reduce(or_,[Q(positions__icontains=position) for position in prefernce.position.split(",")])
         sub_q = reduce(or_,[Q(subjects__icontains=subject) for subject in prefernce.subject.split(",")])
@@ -183,7 +183,7 @@ class GetUserDashBoardData(APIView):
         jobs = JobInfo.objects.filter(final_q).all().order_by("-entry_time")
         all_jobs = [job.to_dict() for job in jobs]
 
-        bookmarked_jobs = TeacherBookmarkedJob.objects.filter(teacher=teacher).all().order_by("-entry_time")
+        bookmarked_jobs = teacher.teacher_bookmarks.all().order_by("-entry_time")
         bookmarked_jobs = [job_.job.to_dict() for job_ in bookmarked_jobs]
         if len(all_jobs)>0:
             return Response({'all_jobs':all_jobs,"bookmarked_jobs":bookmarked_jobs},status=status.HTTP_200_OK)
@@ -192,3 +192,52 @@ class GetUserDashBoardData(APIView):
             jobs = JobInfo.objects.filter(final_q).all().order_by("-entry_time")
             all_jobs = [job.to_dict() for job in jobs]
             return Response({'all_jobs':all_jobs,"bookmarked_jobs":bookmarked_jobs},status=status.HTTP_200_OK)
+
+class GetUserSearchDashBoardData(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self,request,format=None):
+        teacher = None 
+        authentication = False
+        if request.user.is_authenticated:
+            authentication = True
+            try:
+                teacher =  request.user.teacher_user    
+            except Exception as e:
+                return Response("Unexpected Error!",status=status.HTTP_409_CONFLICT) 
+        
+        if teacher:
+            prefernce = teacher.teacher_prefernce
+            pos_q = reduce(or_,[Q(positions__icontains=position) for position in prefernce.position.split(",")])
+            sub_q = reduce(or_,[Q(subjects__icontains=subject) for subject in prefernce.subject.split(",")])
+            loc_q = reduce(or_,[Q(city__icontains=location) for location in prefernce.location.split(",")])
+            cou_q = reduce(or_,[Q(city__icontains=country) for country in prefernce.country.split(',')])
+            final_q = reduce(and_,[pos_q,sub_q,loc_q])
+            
+            prefered_jobs = JobInfo.objects.filter(final_q).all()[:6]
+            prefered_jobs = [prefered_job.to_dict() for prefered_job in prefered_jobs]
+            if len(prefered_jobs)>0:
+                final_q = reduce(or_,[cou_q,loc_q])
+                prefered_jobs = JobInfo.objects.filter(final_q).all()[:6]
+                prefered_jobs = [prefered_job.to_dict() for prefered_job in prefered_jobs]
+
+            bookmarked_jobs = teacher.teacher_bookmarks.all()[:6]
+            bookmarked_jobs = [bookmarked_job.job.to_dict() for bookmarked_job in bookmarked_jobs]
+        else:
+            prefered_jobs = []
+            bookmarked_jobs = []
+        
+        recent_jobs = JobInfo.objects.all().order_by("-entry_time")[:6]
+        recent_jobs = [recent_job.to_dict() for recent_job in recent_jobs]
+
+        return Response(
+            {
+                'recent_jobs':recent_jobs,
+                "bookmarked_jobs":bookmarked_jobs,
+                "prefered_jobs":prefered_jobs,
+                'authentication':{
+                    'status':authentication
+                }
+            },
+            status=status.HTTP_200_OK)
+

@@ -46,6 +46,10 @@ class JobInfo(models.Model):
         for key in ['school','city','address','email','contact','positions','subjects','url','image','isByEdby',
                     'message','entry_time','id']:
                     info_dict[key] = self.__dict__[key].__str__()
+        if info_dict['email'] in ["",None,'None','-']:
+            info_dict['email'] = "In image"
+        if info_dict['contact'] in ["",None,'None','-']:
+            info_dict['contact'] = "In image"
         if self.image:
             info_dict['image_url'] = self.image.url
         return info_dict
