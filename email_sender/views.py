@@ -41,6 +41,13 @@ sheet_service = gsheet.getSheetHandle(creds)
 spreadsheet_id = "1GTLCHCASpjSSgvgx2RqNA268mlsuRdkb8bSAINr8a0A"
 mail_service = gmail.getMailHandle(creds)
 
+def refreshHandle():
+    global creds, sheet_service, mail_service
+    creds = setup()
+    sheet_service = gsheet.getSheetHandle(creds)
+    mail_service = gmail.getMailHandle(creds)
+
+
 def createWelcomeMail(email):
     message = """
     Hey, \n
@@ -66,10 +73,13 @@ def createResetMail(username,email,token):
     """ 
     mailrequest = MailRequest.objects.create(message=body,email=email,mail_type=2)
     mailrequest.save()
-
-    message = gmail.create_message(email,"Forgot Password Reset",body)
-    gmail.SendMessageInternal(mail_service,'me',message)
-    
+    if creds and creds.expired and creds.refresh_token:
+        refreshHandle()
+    try:
+        message = gmail.create_message(email,"Forgot Password Reset",body)
+        gmail.SendMessageInternal(mail_service,'me',message)
+    except Exception as e:
+        print(str(e))
 
 class SendEmail(APIView):
     authentication_classes = []
